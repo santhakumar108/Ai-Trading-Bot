@@ -882,3 +882,54 @@ Executed 0 paper trade(s): []
 
 Account summary: {'starting_capital': 1000000.0, 'cash': 1000000.0, 'equity': 1000000.0, 'unrealized_pnl': 0.0, 'total_return_pct': 0.0, 'open_positions': 0, 'win_rate': 0.0, 'profit_factor': 0.0, 'closed_trades': 0, 'trading_halted': False, 'halt_reason': '', 'current_drawdown_pct': 0.0, 'max_drawdown_pct': 0.0, 'equity_snapshots_recorded': 2, 'sharpe_ratio_session': 0.0, 'daily_risk_used_pct': 0.0, 'no_trade_count': 25, 'decisions_logged': 25}
 ===== End of run: 2026-09-09 10:47:41 =====
+
+===== Paper-trade run (full NSE universe): 2026-09-09 16:00:01 =====
+2026-09-09 16:00:18,589 ERROR yfinance: $3IINFOTECH.NS: No data found, symbol may be delisted
+2026-09-09 16:00:18,592 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:00:18,592 ERROR yfinance: ['3IINFOTECH.NS']: No data found, symbol may be delisted
+2026-09-09 16:00:18,595 WARNING paper_trading.engine: Skipping 3IINFOTECH.NS: Data Quality [3IINFOTECH.NS] as of 2026-09-09T10:30:18.595675+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for 3IINFOTECH.NS (2y/1d)
+2026-09-09 16:00:43,161 WARNING paper_trading.scanner: UniverseScanner: scan failed for AAKASH.NS (skipping, not aborting the cycle): '<' not supported between instances of 'int' and 'str'
+2026-09-09 16:01:53,583 ERROR yfinance: $ACRYSIL.NS: No data found, symbol may be delisted
+2026-09-09 16:01:53,587 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:01:53,587 ERROR yfinance: ['ACRYSIL.NS']: No data found, symbol may be delisted
+2026-09-09 16:01:53,591 WARNING paper_trading.engine: Skipping ACRYSIL.NS: Data Quality [ACRYSIL.NS] as of 2026-09-09T10:31:53.590983+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for ACRYSIL.NS (2y/1d)
+2026-09-09 16:02:14,537 ERROR yfinance: $ADANITRANS.NS: No data found, symbol may be delisted
+2026-09-09 16:02:14,538 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:02:14,538 ERROR yfinance: ['ADANITRANS.NS']: No data found, symbol may be delisted
+2026-09-09 16:02:14,541 WARNING paper_trading.engine: Skipping ADANITRANS.NS: Data Quality [ADANITRANS.NS] as of 2026-09-09T10:32:14.541385+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for ADANITRANS.NS (2y/1d)
+2026-09-09 16:02:20,517 ERROR yfinance: $ADORWELD.NS: No data found, symbol may be delisted
+2026-09-09 16:02:20,520 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:02:20,520 ERROR yfinance: ['ADORWELD.NS']: No data found, symbol may be delisted
+2026-09-09 16:02:20,524 WARNING paper_trading.engine: Skipping ADORWELD.NS: Data Quality [ADORWELD.NS] as of 2026-09-09T10:32:20.524197+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for ADORWELD.NS (2y/1d)
+2026-09-09 16:02:31,837 ERROR yfinance: $AEGISCHEM.NS: No data found, symbol may be delisted
+2026-09-09 16:02:31,844 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:02:31,844 ERROR yfinance: ['AEGISCHEM.NS']: No data found, symbol may be delisted
+2026-09-09 16:02:31,848 WARNING paper_trading.engine: Skipping AEGISCHEM.NS: Data Quality [AEGISCHEM.NS] as of 2026-09-09T10:32:31.848345+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for AEGISCHEM.NS (2y/1d)
+2026-09-09 16:03:36,155 ERROR yfinance: $AKZOINDIA.NS: No data found, symbol may be delisted
+2026-09-09 16:03:36,159 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:03:36,159 ERROR yfinance: ['AKZOINDIA.NS']: No data found, symbol may be delisted
+2026-09-09 16:03:36,162 WARNING paper_trading.engine: Skipping AKZOINDIA.NS: Data Quality [AKZOINDIA.NS] as of 2026-09-09T10:33:36.162321+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for AKZOINDIA.NS (2y/1d)
+2026-09-09 16:04:20,937 ERROR yfinance: $ALLSEC.NS: No data found, symbol may be delisted
+2026-09-09 16:04:20,943 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:04:20,943 ERROR yfinance: ['ALLSEC.NS']: No data found, symbol may be delisted
+2026-09-09 16:04:20,946 WARNING paper_trading.engine: Skipping ALLSEC.NS: Data Quality [ALLSEC.NS] as of 2026-09-09T10:34:20.946878+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for ALLSEC.NS (2y/1d)
+2026-09-09 16:04:32,194 ERROR yfinance: $AMARAJABAT.NS: No data found, symbol may be delisted
+2026-09-09 16:04:32,199 ERROR yfinance: 
+1 Failed download:
+2026-09-09 16:04:32,199 ERROR yfinance: ['AMARAJABAT.NS']: No data found, symbol may be delisted
+2026-09-09 16:04:32,203 WARNING paper_trading.engine: Skipping AMARAJABAT.NS: Data Quality [AMARAJABAT.NS] as of 2026-09-09T10:34:32.203237+00:00: INVALID (score=0.00, threshold=0.70)
+  [CRITICAL] provider_unavailable: No data returned for AMARAJABAT.NS (2y/1d)
