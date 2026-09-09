@@ -1,0 +1,48 @@
+name: Daily Paper Trading (Full NSE Universe)
+
+# Runs weekdays shortly after NSE market close (4:00 PM IST = 10:30 UTC).
+# Scans the full ~1367-symbol NSE EQ universe (config/full_universe.yaml)
+# using the SAME PaperBroker-only pipeline as the local run -- this
+# workflow never places a real order and never touches any live broker.
+# A run can take a few hours; that is expected given the universe size.
+on:
+  schedule:
+    - cron: "30 10 * * 1-5"
+  workflow_dispatch: {}  # allows a manual "Run workflow" click for testing
+
+permissions:
+  contents: write  # needed to commit the updated logs/ back to the repo
+
+jobs:
+  paper-trade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily paper trade (full universe)
+        run: |
+          mkdir -p logs
+          {
+            echo ""
+            echo "===== Paper-trade run (full NSE universe): $(date '+%Y-%m-%d %H:%M:%S') ====="
+            python main.py --config config/full_universe.yaml paper-trade
+            echo "===== End of run: $(date '+%Y-%m-%d %H:%M:%S') ====="
+          } >> logs/paper_trade_run_log.txt 2>&1
+
+      - name: Commit updated logs
+        run: |
+          git config user.name "nse-bot-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f logs/decision_log.csv logs/paper_trade_journal.csv logs/paper_trade_run_log.txt
+          git diff --cached --quiet || git commit -m "Daily paper-trade run: $(date '+%Y-%m-%d')"
+          git push

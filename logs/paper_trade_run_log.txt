@@ -1,0 +1,884 @@
+
+===== Paper-trade run: 2026-09-09 10:47:41 =====
+Starting paper trading cycle. Mode: PAPER
+Symbol: RELIANCE.NS
+Current Price: 1284.20
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 43.3/100
+Fundamental Score: 75.0/100
+Fundamental Risk: 35.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 54.2/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: TCS.NS
+Current Price: 2200.50
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BULL_LOW_VOL
+Technical Score: 40.0/100
+Fundamental Score: 92.0/100
+Fundamental Risk: 10.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 72.4/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 55.8/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: HDFCBANK.NS
+Current Price: 694.20
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 31.7/100
+Fundamental Score: 86.0/100
+Fundamental Risk: 30.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 48.4/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: ICICIBANK.NS
+Current Price: 1388.80
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 31.7/100
+Fundamental Score: 94.0/100
+Fundamental Risk: 30.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 66.8/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 50.4/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: INFY.NS
+Current Price: 1040.60
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BULL_LOW_VOL
+Technical Score: 40.0/100
+Fundamental Score: 82.0/100
+Fundamental Risk: 10.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 73.3/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 52.5/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: HINDUNILVR.NS
+Current Price: 1956.10
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 38.3/100
+Fundamental Score: 62.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.3/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 47.6/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: ITC.NS
+Current Price: 262.00
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 38.3/100
+Fundamental Score: 60.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.2/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 46.9/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: SBIN.NS
+Current Price: 1009.90
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 43.3/100
+Fundamental Score: 84.0/100
+Fundamental Risk: 30.0/100
+News Score: 50.0/100
+News Sentiment: NEUTRAL
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.0/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 53.3/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: BHARTIARTL.NS
+Current Price: 1823.20
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 38.3/100
+Fundamental Score: 86.0/100
+Fundamental Risk: 47.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 52.2/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: BAJFINANCE.NS
+Current Price: 1050.30
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 43.3/100
+Fundamental Score: 64.0/100
+Fundamental Risk: 55.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.8/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 52.6/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: KOTAKBANK.NS
+Current Price: 414.05
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BULL_LOW_VOL
+Technical Score: 61.7/100
+Fundamental Score: 86.0/100
+Fundamental Risk: 30.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.8/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 65.9/100 (WATCH)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: LT.NS
+Current Price: 3992.90
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 46.7/100
+Fundamental Score: 68.0/100
+Fundamental Risk: 30.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 66.1/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 55.0/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: HCLTECH.NS
+Current Price: 1241.50
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BULL_LOW_VOL
+Technical Score: 40.0/100
+Fundamental Score: 82.0/100
+Fundamental Risk: 10.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 72.8/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 53.3/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: AXISBANK.NS
+Current Price: 1246.50
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 48.3/100
+Fundamental Score: 86.0/100
+Fundamental Risk: 30.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 59.4/100 (WATCH)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: ASIANPAINT.NS
+Current Price: 2466.20
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 30.0/100
+Fundamental Score: 78.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 69.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 44.4/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: MARUTI.NS
+Current Price: 12579.00
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 33.3/100
+Fundamental Score: 67.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 44.8/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: SUNPHARMA.NS
+Current Price: 1875.80
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 35.0/100
+Fundamental Score: 82.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.8/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 50.4/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: TITAN.NS
+Current Price: 4984.50
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BULL_LOW_VOL
+Technical Score: 43.3/100
+Fundamental Score: 58.0/100
+Fundamental Risk: 42.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.2/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 52.3/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: ULTRACEMCO.NS
+Current Price: 10967.00
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 31.7/100
+Fundamental Score: 78.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.6/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 46.9/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: BAJAJFINSV.NS
+Current Price: 1943.70
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BULL_LOW_VOL
+Technical Score: 40.0/100
+Fundamental Score: 64.0/100
+Fundamental Risk: 55.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 68.1/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 51.3/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: WIPRO.NS
+Current Price: 168.06
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 28.3/100
+Fundamental Score: 96.0/100
+Fundamental Risk: 10.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 70.5/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 49.6/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: NESTLEIND.NS
+Current Price: 1395.40
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 31.7/100
+Fundamental Score: 70.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 70.0/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 45.1/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: ai signals aligned.
+  5. Failed check: risk reward sufficient.
+  6. Failed check: expected value positive.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: ONGC.NS
+Current Price: 236.84
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: SIDEWAYS_LOW_VOL
+Technical Score: 56.7/100
+Fundamental Score: 90.0/100
+Fundamental Risk: 20.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.0/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 61.5/100 (WATCH)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses). Also invalid if remaining signal components diverge further.
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: NTPC.NS
+Current Price: 336.85
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 56.7/100
+Fundamental Score: 61.0/100
+Fundamental Risk: 42.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.6/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 57.7/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+Symbol: POWERGRID.NS
+Current Price: 266.80
+Market Trend: SIDEWAYS
+Sector Trend: N/A
+Market Regime: BEAR_LOW_VOL
+Technical Score: 53.3/100
+Fundamental Score: 61.0/100
+Fundamental Risk: 42.0/100
+News Score: N/A/100 (unavailable)
+News Sentiment: N/A
+Social Sentiment Score: N/A/100 (unavailable)
+Risk Score: 67.7/100
+ML Probability (target before stop): N/A (unavailable)
+Overall Confidence: 57.0/100 (NO TRADE)
+Entry: N/A
+Stop Loss: N/A
+Target: N/A
+Risk/Reward: N/A
+Expected Risk: N/A
+Expected Reward: N/A
+Expected Value (per share): N/A
+Expected Value (position): N/A
+Decision: NO TRADE
+Reasons:
+  1. No risk assessment available (entry/stop/target could not be computed).
+  2. Failed check: signal is directional.
+  3. Failed check: confidence sufficient.
+  4. Failed check: risk reward sufficient.
+  5. Failed check: expected value positive.
+  6. Failed check: positive edge after costs.
+Invalidation condition: The technical setup that produced this signal no longer holds (e.g. trend reverses).
+Unavailable components (excluded, not faked): news_sentiment, social_sentiment, ml
+
+Disclaimer: This is a probabilistic, evidence-based estimate, not a guarantee of profit or a claim of near-certain accuracy.
+--------------------------------------------------------------------------------
+
+Scanned 25/25 symbol(s) (0 skipped).
+Executed 0 paper trade(s): []
+
+Account summary: {'starting_capital': 1000000.0, 'cash': 1000000.0, 'equity': 1000000.0, 'unrealized_pnl': 0.0, 'total_return_pct': 0.0, 'open_positions': 0, 'win_rate': 0.0, 'profit_factor': 0.0, 'closed_trades': 0, 'trading_halted': False, 'halt_reason': '', 'current_drawdown_pct': 0.0, 'max_drawdown_pct': 0.0, 'equity_snapshots_recorded': 2, 'sharpe_ratio_session': 0.0, 'daily_risk_used_pct': 0.0, 'no_trade_count': 25, 'decisions_logged': 25}
+===== End of run: 2026-09-09 10:47:41 =====

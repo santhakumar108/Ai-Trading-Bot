@@ -1,0 +1,235 @@
+# =============================================================================
+# Default configuration for the AI-assisted trading analysis & paper-trading
+# system. Every number here is a DEFAULT, not a recommendation of profitability.
+# Override any value with a local config.yaml (same shape) or environment
+# variables (see config/settings.py for the mapping).
+# =============================================================================
+
+system:
+  # Master safety switch. Must be flipped to true manually, and only after
+  # real_money_readiness checklist (see risk/readiness.py) passes.
+  live_trading_enabled: false
+  emergency_stop: false
+  base_currency: "INR"           # display only; engine is unit-agnostic
+  market: "NSE"                  # "NSE", "BSE", "US", or "generic" (market-agnostic).
+                                  # India/NSE is this system's primary configuration.
+  exchange: "NSE"                # specific listing venue -- kept separate from `market`
+                                  # (affects instrument-suffix conventions & the calendar below)
+  trading_calendar: "NSE"        # data/market_calendar.py calendar to use for trading-day/
+                                  # holiday checks -- only "NSE" gets real fixed national
+                                  # holidays; anything else is honestly weekend-only.
+  timezone: "Asia/Kolkata"       # IST. Never assume US market hours anywhere downstream.
+
+# -----------------------------------------------------------------------------
+# Symbol universe. `symbols` below is the NIFTY 50 as of the snapshot date in
+# config/nse_universe.py (SEE THAT FILE'S DOCSTRING -- it is a hand-maintained
+# snapshot, not a live-fetched constituent list, and will drift out of date as
+# NSE reconstitutes the index; refresh it yourself from NSE's official
+# published list). Append ".NS" for NSE-listed stocks, ".BO" for BSE.
+#
+# BENCHMARK / INDEX -- read this before running anything for real:
+#   index_symbol is the benchmark used for market-trend and relative-strength
+#   scoring. If `system.market` is "NSE"/"BSE"/"US", config/settings.py
+#   auto-fills it from a preset (NIFTY 50 "^NSEI" / SENSEX "^BSESN" / S&P 500
+#   "^GSPC") when left null -- there is NO universal default, and
+#   market="generic" deliberately resolves to no benchmark (market trend
+#   reports UNKNOWN) rather than silently comparing NSE stocks against the
+#   S&P 500. It's set explicitly to "^NSEI" here for clarity.
+# -----------------------------------------------------------------------------
+universe:
+  symbols: [
+    "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "ICICIBANK.NS", "INFY.NS",
+    "HINDUNILVR.NS", "ITC.NS", "SBIN.NS", "BHARTIARTL.NS", "BAJFINANCE.NS",
+    "KOTAKBANK.NS", "LT.NS", "HCLTECH.NS", "AXISBANK.NS", "ASIANPAINT.NS",
+    "MARUTI.NS", "SUNPHARMA.NS", "TITAN.NS", "ULTRACEMCO.NS", "BAJAJFINSV.NS",
+    "WIPRO.NS", "NESTLEIND.NS", "ONGC.NS", "NTPC.NS", "POWERGRID.NS",
+    "M&M.NS", "TATASTEEL.NS", "TATAMOTORS.NS", "ADANIENT.NS", "COALINDIA.NS",
+    "JSWSTEEL.NS", "INDUSINDBK.NS", "GRASIM.NS", "TECHM.NS", "HINDALCO.NS",
+    "CIPLA.NS", "DRREDDY.NS", "BRITANNIA.NS", "EICHERMOT.NS", "APOLLOHOSP.NS",
+    "DIVISLAB.NS", "BAJAJ-AUTO.NS", "SBILIFE.NS", "HDFCLIFE.NS", "BPCL.NS",
+    "HEROMOTOCO.NS", "UPL.NS", "TATACONSUM.NS", "SHRIRAMFIN.NS", "LTIM.NS",
+  ]
+  index_symbol: "^NSEI"          # NIFTY 50 -- explicit even though "NSE" would auto-resolve it
+  sector_map: {}                 # optional symbol -> sector name (e.g. {"TCS.NS": "IT"}), for
+                                  # exposure limits AND for sector-trend scoring via
+                                  # sector_indices below. Left empty by default -- sector
+                                  # classification per constituent is not auto-derived here.
+  sector_indices:                # sector name -> NSE sector-index symbol (see
+                                  # config/nse_universe.py:NSE_SECTOR_INDICES). A symbol whose
+                                  # sector_map entry isn't a key here just has no sector-trend
+                                  # component computed (reported "N/A", never fabricated).
+    IT: "^CNXIT"
+    BANK: "^NSEBANK"
+    AUTO: "^CNXAUTO"
+    PHARMA: "^CNXPHARMA"
+    FMCG: "^CNXFMCG"
+    METAL: "^CNXMETAL"
+    ENERGY: "^CNXENERGY"
+    REALTY: "^CNXREALTY"
+    PSU_BANK: "^CNXPSUBANK"
+    FIN_SERVICE: "^CNXFINANCE"
+  # Scanner tuning (spec section 19) -- see paper_trading/scanner.py's UniverseScanner.
+  # Scanning the full universe above hits a free/rate-limited market-data API once per
+  # symbol; these knobs control how gently that happens, not what gets scanned.
+  scan_batch_size: 10             # symbols per batch before pausing
+  scan_batch_delay_seconds: 1.0   # pause between batches
+  scan_cache_ttl_seconds: 60.0    # a repeat scan within this window reuses the prior result
+
+# -----------------------------------------------------------------------------
+# AI Signal Engine weights. Must sum to 1.0 (validated at load time).
+# -----------------------------------------------------------------------------
+signal_weights:
+  technical: 0.25
+  market_condition: 0.15
+  fundamentals: 0.15
+  news_sentiment: 0.15
+  social_sentiment: 0.10
+  volume_price_behavior: 0.10
+  risk_volatility: 0.10
+
+# -----------------------------------------------------------------------------
+# Confidence bands (0-100 calibrated score -> label).
+# -----------------------------------------------------------------------------
+confidence_bands:
+  no_trade_max: 59
+  watch_max: 69
+  moderate_max: 79
+  high_max: 89
+  # 90-100 = VERY HIGH CONFIDENCE
+
+decision_thresholds:
+  min_confidence_to_trade: 70     # below this -> NO TRADE regardless of everything else
+  min_risk_reward: 2.0            # hard floor
+  preferred_risk_reward: 2.5      # soft preference, used for sizing/quality tilt
+  max_model_disagreement: 0.35    # normalized disagreement score above which -> NO TRADE
+  min_history_bars: 250           # minimum bars of history required to trust a signal
+  min_independent_signals: 1      # need at least this many of {technical, fundamentals,
+                                   # news, social, ML} to actually have real data before a
+                                   # trade can even be considered -- unavailable components
+                                   # never count. DEFAULT IS 1 (technical alone, from real
+                                   # price/volume data, is a legitimate signal): with the
+                                   # default backtest providers, fundamentals/news/social
+                                   # are ALWAYS unavailable and ML is off by default, so a
+                                   # value of 2+ here structurally blocks every trade on
+                                   # every symbol regardless of setup quality -- see
+                                   # config/settings.py's DecisionThresholds docstring and
+                                   # tests/test_zero_trade_regression.py. Raise this back to
+                                   # 2+ only once real fundamentals/news/social/ML providers
+                                   # are actually wired in for the run.
+  bearish_regime_confidence_bonus: 5.0  # added to min_confidence_to_trade only when the
+                                         # market regime reads BEAR (spec Part 16) -- never
+                                         # subtracted for any other regime
+  news_conflict_score_threshold: 20.0   # spec Part 16: a credible, strongly-opposed news item
+                                         # (score <= this for a BUY, >= 100-this for a SELL)
+                                         # vetoes an otherwise-approved trade
+  news_conflict_min_confidence: 50.0    # "credible" news, for the conflict veto above
+
+# -----------------------------------------------------------------------------
+# Risk & capital protection. ALL percentages are fractions of account equity.
+# -----------------------------------------------------------------------------
+risk:
+  risk_per_trade_pct: 0.0075      # 0.75% of capital risked per trade (0.5%-1% range)
+  max_daily_loss_pct: 0.02        # stop all new trades if breached intraday
+  max_weekly_loss_pct: 0.05       # stop all new trades if breached in a week
+  max_simultaneous_positions: 5
+  max_sector_exposure_pct: 0.30   # max fraction of capital in one sector
+  max_single_position_pct: 0.20   # max fraction of capital in one symbol
+  min_liquidity_avg_volume: 100000    # min 20-day average volume to be tradeable
+  max_atr_pct_of_price: 0.08      # above this, volatility considered "abnormal"
+  min_atr_pct_of_price: 0.002     # below this, too illiquid/quiet to define a stop
+  transaction_cost_pct: 0.0010    # brokerage + taxes, round trip approximation, per leg
+  slippage_pct: 0.0007            # expected slippage per leg
+  min_edge_after_costs_pct: 0.001 # expected reward must exceed costs by at least this
+
+  # Small-account mode (spec Part 10-14): risk_per_trade_pct above is an
+  # institutional-scale default that makes almost every trade unaffordable
+  # on a small account (0.75% of INR 1,000 = INR 7.50 max risk). Below this
+  # capital threshold, small_account_risk_per_trade_pct applies instead --
+  # decided BEFORE evaluating any specific candidate, never adjusted after
+  # the fact to force a trade through. See config/settings.py's RiskConfig.
+  small_account_capital_threshold: 25000.0
+  small_account_risk_per_trade_pct: 0.02
+  # Loss-streak capital protection (spec Part 26): after this many
+  # consecutive losing trades, effective risk-per-trade is multiplied by
+  # risk_reduction_factor until a win resets the streak.
+  max_consecutive_losses_before_reduction: 3
+  risk_reduction_factor: 0.5
+
+paper_trading:
+  starting_capital: 1000000.0
+  base_currency: "INR"
+  poll_interval_seconds: 60
+
+news:
+  max_headline_age_hours: 48       # older news considered "priced in" by default
+  min_source_credibility: 0.4      # 0-1 scale, below this a source is ignored
+  contradiction_window_hours: 24
+
+social:
+  min_mentions_for_signal: 25
+  spam_bot_score_threshold: 0.6   # above this fraction flagged bot-like, discount signal
+  max_weight_single_post: 0.05    # cap influence of any single post/account
+
+backtesting:
+  brokerage_pct: 0.0010
+  taxes_pct: 0.0005
+  slippage_pct: 0.0007
+  bid_ask_spread_pct: 0.0005
+  initial_capital: 1000000.0
+
+# -----------------------------------------------------------------------------
+# Data quality gate (spec section 3). Below min_quality_score_to_trade, the
+# strategy pipeline forces NO TRADE and a backtest run is marked INVALID for
+# that symbol/period, regardless of what every other signal says.
+# -----------------------------------------------------------------------------
+data_quality:
+  min_quality_score_to_trade: 0.70
+  max_missing_row_fraction: 0.05
+  max_stale_data_days: 5
+  abnormal_daily_return_threshold: 0.20
+  min_volume_for_liquidity_check: 1.0
+
+# -----------------------------------------------------------------------------
+# ML trade-outcome meta-model (spec Part 7). `enabled` mirrors the CLI's
+# --ml flag -- off by default, never silently active. See
+# models/ml_baseline.py's build_trade_outcome_features and
+# paper_trading/live_ml_provider.py.
+# -----------------------------------------------------------------------------
+ml:
+  enabled: false
+  min_history_bars: 300
+  min_auc: 0.53          # gate below which a fitted model is treated as not usable
+  stop_atr_multiple: 1.5
+  target_atr_multiple: 3.0
+  max_holding_days: 20
+  n_splits: 5
+
+# -----------------------------------------------------------------------------
+# Data provider selection (spec section 21). Configuration-based, never a
+# hard-coded vendor and never an API key here -- see .env.example and
+# config/providers.py. Override via MARKET_DATA_PROVIDER / NEWS_PROVIDER /
+# FUNDAMENTALS_PROVIDER / SOCIAL_PROVIDER / MACRO_PROVIDER environment
+# variables.
+# -----------------------------------------------------------------------------
+providers:
+  market_data: "yfinance"   # "yfinance" | "none"
+  news: "google_rss"        # "google_rss" | "none"
+  fundamentals: "yfinance"  # "yfinance" | "none"
+  social: "reddit"          # "reddit" | "none"
+  macro: "yfinance"         # "yfinance" | "none"
+
+# -----------------------------------------------------------------------------
+# Global + India macro context (spec Part 2) -- US VIX / India VIX / crude
+# oil / USD-INR. Core analysis, enabled by default (unlike ml.enabled below,
+# which is opt-in due to model-fit cost) -- a fetch failure for any one
+# series degrades that series to UNKNOWN, never crashes a scan or fabricates
+# a reading. See data/macro_data.py and strategy/signal_engine.py's
+# _market_condition_score().
+# -----------------------------------------------------------------------------
+macro:
+  enabled: true
+  cache_ttl_seconds: 300.0
+  us_vix_symbol: "^VIX"
+  india_vix_symbol: "^INDIAVIX"
+  crude_symbol: "CL=F"
+  usdinr_symbol: "INR=X"
