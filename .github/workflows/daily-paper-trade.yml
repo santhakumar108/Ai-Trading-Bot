@@ -47,5 +47,18 @@ jobs:
           git config user.name "nse-bot-actions"
           git config user.email "actions@users.noreply.github.com"
           git add -f logs/decision_log.csv logs/paper_trade_journal.csv logs/paper_trade_run_log.txt docs/index.html
-          git diff --cached --quiet || git commit -m "Daily paper-trade run: $(date '+%Y-%m-%d')"
-          git push
+          git diff --cached --quiet && exit 0
+          git commit -m "Daily paper-trade run: $(date '+%Y-%m-%d')"
+          # This run can take hours; the remote may have moved (a manual
+          # push, or an overlapping run) since checkout -- rebase onto
+          # the latest main before pushing, retrying once, so a real
+          # day's results are never silently lost to a push rejection.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt) -- pulling and retrying."
+            git pull --rebase origin main
+          done
+          echo "::error::Failed to push after 3 attempts."
+          exit 1

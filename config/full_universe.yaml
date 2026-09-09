@@ -1,9 +1,9 @@
 # Overrides universe.symbols with the full NSE EQ-series list
 # (config/nse_all_equity.py, ~1367 symbols, ~2021 snapshot -- see that
 # file's docstring for the source and staleness caveat). Used via
-# --config for the WEEKLY full-universe scan
-# (scripts/run_weekly_full_scan.ps1) -- NOT the daily scan, which stays
-# on its small, fast, hand-curated symbol list.
+# --config for the DAILY paper-trade run (scripts/run_daily_paper_trade.ps1
+# locally, .github/workflows/daily-paper-trade.yml in the cloud) -- the
+# whole universe is scanned every day, not a small curated subset.
 universe:
   symbols:
     - "20MICRONS.NS"
