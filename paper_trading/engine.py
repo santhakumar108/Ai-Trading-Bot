@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
+from broker.broker_interface import Position
 from broker.paper_broker import PaperBroker
 from config.settings import Config
 from data.data_quality import DataQualityReport
@@ -156,6 +157,49 @@ class PaperTradingEngine:
         # PaperBroker itself has no notion of time, only current state, so
         # the engine is what remembers equity over the course of a session.
         self._equity_history: List[Tuple[datetime, float]] = []
+        # Every real run of this engine (main.py's `paper-trade`) is a
+        # single one-shot cycle, not a long-lived process -- so cash/
+        # positions/capital-protection state must be rebuilt from the
+        # journal's own persisted history on every startup, or each new
+        # run would silently look like a brand-new account. A no-op when
+        # the journal is empty (fresh account, or any test using an
+        # isolated tmp_path journal).
+        self._restore_state_from_journal()
+
+    def _restore_state_from_journal(self) -> None:
+        """Replays the journal's history through the SAME `CapitalProtection.
+        register_open`/`register_close` methods already used for real-time
+        updates, and reconstructs `PaperBroker`'s cash/positions with the
+        same entry-leg cash formulas `place_order` itself uses -- see
+        Phase 20's plan for why this reproduces the correct state rather
+        than inventing new math. Closed trades are replayed in
+        chronological order specifically so `CapitalProtection`'s internal
+        day/week rollover lands correctly (a trade closed last week must
+        not count toward this week's weekly P&L)."""
+        closed = sorted(self.journal.closed_trades(), key=lambda e: e.exit_time)
+        for e in closed:
+            if e.net_pnl is not None:
+                self.broker._cash += e.net_pnl
+            self.capital_protection.register_close(
+                e.sector, e.entry_price * e.quantity, e.net_pnl or 0.0,
+                today=e.exit_time.date(),
+            )
+
+        for e in self.journal.open_trades():
+            notional = e.entry_price * e.quantity
+            if e.side.upper() == "BUY":
+                self.broker._cash -= (notional + e.fees)
+                pos_side = "LONG"
+            else:
+                self.broker._cash += (notional - e.fees)
+                pos_side = "SHORT"
+            self.broker._positions[e.symbol] = Position(
+                symbol=e.symbol, side=pos_side, quantity=e.quantity,
+                average_price=e.entry_price, stop_loss=e.stop_loss, target=e.target,
+                opened_at=e.entry_time, sector=e.sector,
+            )
+            self._trade_ids[e.symbol] = e.trade_id
+            self.capital_protection.register_open(e.sector, notional)
 
     # ------------------------------------------------------------------
     def scan_symbol(self, symbol: str, sector: Optional[str] = None) -> Optional[ScanResult]:
@@ -477,6 +521,7 @@ class PaperTradingEngine:
             confidence_at_entry=result.signal.overall_confidence,
             decision_reasons="; ".join(result.filter_result.reasons or result.signal.reasons),
             fees=entry_fee,
+            sector=sector,
         ))
         self.capital_protection.register_open(sector, risk.notional_exposure)
         return trade_id

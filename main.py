@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 
 from config.settings import load_config
@@ -330,6 +331,19 @@ def cmd_optimize(args) -> None:
           "backtesting/historical_providers.py).")
 
 
+def cmd_customer_dashboard(args) -> None:
+    from paper_trading.engine import PaperTradingEngine
+    from dashboard.customer_report import write_customer_html
+
+    config = load_config(args.config)
+    # No scan here -- this only reports the account's current REAL state
+    # (engine construction reconstructs cash/positions/capital-protection
+    # from the journal's history, Phase 20), not fresh candidate analysis.
+    engine = PaperTradingEngine(config, fetch_news=False, fetch_social=False)
+    path = write_customer_html(engine, config, args.html)
+    print(f"Wrote customer dashboard to {path}")
+
+
 def cmd_dashboard(args) -> None:
     from paper_trading.engine import PaperTradingEngine
     from paper_trading.scanner import UniverseScanner
@@ -554,6 +568,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_dash.add_argument("--no-social", action="store_true")
     p_dash.add_argument("--ml", action="store_true", help="Opt in to the live ML trade-outcome model (spec Part 7).")
     p_dash.set_defaults(func=cmd_dashboard)
+
+    p_cust_dash = sub.add_parser("customer-dashboard", help="Write the simplified customer-facing HTML dashboard (real account state, no re-scan).")
+    p_cust_dash.add_argument("--html", default=os.path.join("docs", "index.html"), help="Output path (default docs/index.html, the GitHub Pages source).")
+    p_cust_dash.set_defaults(func=cmd_customer_dashboard)
 
     p_ready = sub.add_parser("readiness", help="Show the real-money readiness checklist.")
     p_ready.set_defaults(func=cmd_readiness)

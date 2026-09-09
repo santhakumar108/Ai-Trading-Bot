@@ -1,0 +1,574 @@
+"""
+Customer-facing HTML dashboard generator.
+
+Renders the same simplified, non-technical dashboard design validated
+this session (no technical/fundamental/ML scores, no gate-by-gate
+reasons -- just balance, holdings, P&L, trade counts) but with REAL
+numbers read from the given PaperTradingEngine's current state. As of
+Phase 20, engine construction reconstructs cash/positions/capital-
+protection state from the journal's persisted history
+(PaperTradingEngine._restore_state_from_journal), so this reflects the
+account's real cumulative position across every past run, not just the
+current process.
+
+Never fabricates data: a panel with zero real rows shows an honest empty
+state plus a clearly-labeled SAMPLE block illustrating the format --
+same "never pass off an example as the user's own data" contract already
+used for the interactive artifact this mirrors. The portfolio-value
+chart stays a labeled SAMPLE (no persisted daily equity-curve file exists
+yet -- see Phase 20's plan for why that's a separate, later addition).
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
+
+from broker.broker_interface import Position
+from config.settings import Config
+from paper_trading.engine import PaperTradingEngine
+from paper_trading.journal import JournalEntry
+
+IST_OFFSET = timedelta(hours=5, minutes=30)
+
+
+def _to_ist(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc) + IST_OFFSET
+
+
+def _inr(amount: float) -> str:
+    n = int(round(abs(amount)))
+    s = str(n)
+    if len(s) <= 3:
+        grouped = s
+    else:
+        last3 = s[-3:]
+        rest = s[:-3]
+        parts: List[str] = []
+        while len(rest) > 2:
+            parts.insert(0, rest[-2:])
+            rest = rest[:-2]
+        if rest:
+            parts.insert(0, rest)
+        grouped = ",".join(parts) + "," + last3
+    return f"&#8377;{grouped}"
+
+
+def _signed_inr(amount: float) -> str:
+    sign = "+" if amount >= 0 else "-"
+    return f"{sign}{_inr(amount)}"
+
+
+def _pct(value: float) -> str:
+    arrow = "&#9650;" if value >= 0 else "&#9660;"
+    return f"{arrow} {abs(value):.1f}%"
+
+
+def _short_symbol(symbol: str) -> str:
+    return symbol[:-3] if symbol.endswith(".NS") else symbol
+
+
+def _avatar(symbol: str) -> str:
+    return _short_symbol(symbol)[:3].upper()
+
+
+def _relative_day_label(d, today) -> str:
+    delta = (today - d).days
+    if delta == 0:
+        return "Today"
+    if delta == 1:
+        return "Yesterday"
+    if 1 < delta < 7:
+        return f"{delta} days ago"
+    return d.strftime("%d %b")
+
+
+def _holding_card_html(pos: Position, current_price: Optional[float]) -> str:
+    price = current_price if current_price is not None else pos.average_price
+    market_value = price * pos.quantity
+    if pos.side == "LONG":
+        pnl = (price - pos.average_price) * pos.quantity
+    else:
+        pnl = (pos.average_price - price) * pos.quantity
+    denom = pos.average_price * pos.quantity
+    pnl_pct = (pnl / denom * 100) if denom else 0.0
+    row_cls = "is-profit" if pnl >= 0 else "is-loss"
+    pnl_cls = "profit" if pnl >= 0 else "loss"
+    return (
+        f'<div class="holding-card {row_cls}">'
+        f'<div class="stock-avatar">{_avatar(pos.symbol)}</div>'
+        f'<div class="holding-mid">'
+        f'<p class="h-symbol">{_short_symbol(pos.symbol)} &middot; {pos.side}</p>'
+        f'<p class="h-detail">{pos.quantity} shares &middot; bought at {_inr(pos.average_price)}</p>'
+        f'</div>'
+        f'<div class="holding-right">'
+        f'<p class="h-value tabular">{_inr(market_value)}</p>'
+        f'<p class="h-pnl {pnl_cls} tabular">{_signed_inr(pnl)} ({pnl_pct:+.1f}%)</p>'
+        f'</div></div>'
+    )
+
+
+def _activity_row_html(e: JournalEntry, now_ist: datetime) -> str:
+    is_close = e.exit_time is not None
+    when_ist = _to_ist(e.exit_time if is_close else e.entry_time)
+    day_label = _relative_day_label(when_ist.date(), now_ist.date())
+    time_label = when_ist.strftime("%I:%M %p").lstrip("0")
+
+    if is_close:
+        verb = "Sold" if e.side.upper() == "BUY" else "Bought back"
+        badge_letter, badge_cls = "S", "sell"
+        pnl = e.net_pnl or 0.0
+        denom = e.entry_price * e.quantity
+        pnl_pct = (pnl / denom * 100) if denom else 0.0
+        row_cls = "is-profit" if pnl >= 0 else "is-loss"
+        pnl_html = f'{_signed_inr(pnl)}<span class="a-pct">{_pct(pnl_pct)}</span>'
+        sub = f"{day_label}, {time_label} &middot; {e.quantity} @ {_inr(e.exit_price or 0.0)}"
+    else:
+        verb = "Bought" if e.side.upper() == "BUY" else "Sold short"
+        badge_letter, badge_cls = "B", "buy"
+        row_cls = ""
+        pnl_html = '<span class="a-pending">Still open</span>'
+        sub = f"{day_label}, {time_label} &middot; {e.quantity} @ {_inr(e.entry_price)}"
+
+    return (
+        f'<div class="activity-row {row_cls}">'
+        f'<div class="activity-badge {badge_cls}">{badge_letter}</div>'
+        f'<div class="activity-main">'
+        f'<p class="a-title">{verb} {_short_symbol(e.symbol)}</p>'
+        f'<p class="a-sub">{sub}</p>'
+        f'</div>'
+        f'<div class="activity-pnl tabular">{pnl_html}</div></div>'
+    )
+
+
+_HOLDINGS_SAMPLE = """
+<div class="sample-banner">
+  <span class="sample-tag">Sample</span>
+  <span class="sample-note">The exact format each holding will use</span>
+</div>
+<div class="sample-block">
+  <div class="holding-card is-profit">
+    <div class="stock-avatar">REL</div>
+    <div class="holding-mid">
+      <p class="h-symbol">RELIANCE &middot; LONG</p>
+      <p class="h-detail">40 shares &middot; bought at &#8377;1,250.00</p>
+    </div>
+    <div class="holding-right">
+      <p class="h-value tabular">&#8377;51,200</p>
+      <p class="h-pnl profit tabular">+&#8377;2,400 (+4.9%)</p>
+    </div>
+  </div>
+  <div class="holding-card is-loss">
+    <div class="stock-avatar">TCS</div>
+    <div class="holding-mid">
+      <p class="h-symbol">TCS &middot; LONG</p>
+      <p class="h-detail">12 shares &middot; bought at &#8377;3,500.00</p>
+    </div>
+    <div class="holding-right">
+      <p class="h-value tabular">&#8377;40,800</p>
+      <p class="h-pnl loss tabular">-&#8377;1,200 (-2.9%)</p>
+    </div>
+  </div>
+</div>
+"""
+
+_ACTIVITY_SAMPLE = """
+<div class="sample-banner">
+  <span class="sample-tag">Sample</span>
+  <span class="sample-note">What a real trade looks like</span>
+</div>
+<div class="sample-block">
+  <div class="activity-row is-profit">
+    <div class="activity-badge buy">B</div>
+    <div class="activity-main">
+      <p class="a-title">Bought RELIANCE</p>
+      <p class="a-sub">Today, 4:12 PM &middot; 40 @ &#8377;1,250</p>
+    </div>
+    <div class="activity-pnl profit tabular">+&#8377;2,400<span class="a-pct">&#9650; 4.9%</span></div>
+  </div>
+  <div class="activity-row is-loss">
+    <div class="activity-badge sell">S</div>
+    <div class="activity-main">
+      <p class="a-title">Sold INFY</p>
+      <p class="a-sub">Yesterday, 4:07 PM &middot; 25 @ &#8377;1,480</p>
+    </div>
+    <div class="activity-pnl loss tabular">-&#8377;875<span class="a-pct">&#9660; 2.4%</span></div>
+  </div>
+</div>
+"""
+
+
+def render_customer_html(engine: PaperTradingEngine, config: Config) -> str:
+    starting_capital = config.paper_trading.starting_capital
+    equity = engine.broker.equity()
+    change = equity - starting_capital
+    change_pct = (change / starting_capital * 100) if starting_capital else 0.0
+
+    positions = engine.broker.get_positions()
+    closed = engine.journal.closed_trades()
+    opened = engine.journal.open_trades()
+    all_trades: List[JournalEntry] = sorted(
+        closed + opened, key=lambda e: e.exit_time or e.entry_time, reverse=True,
+    )
+
+    now_ist = _to_ist(datetime.now(timezone.utc))
+    today_ist = now_ist.date()
+    hour = now_ist.hour
+    greeting = "Good morning" if hour < 12 else ("Good afternoon" if hour < 17 else "Good evening")
+
+    def _touched_today(e: JournalEntry) -> bool:
+        if _to_ist(e.entry_time).date() == today_ist:
+            return True
+        return bool(e.exit_time and _to_ist(e.exit_time).date() == today_ist)
+
+    trades_today = sum(1 for e in (closed + opened) if _touched_today(e))
+    total_trades = len(closed) + len(opened)
+    profitable = sum(1 for e in closed if (e.net_pnl or 0.0) > 0)
+    total_gain_loss = sum(e.net_pnl or 0.0 for e in closed) + engine.broker.unrealized_pnl()
+
+    if positions:
+        rows = []
+        for pos in positions:
+            try:
+                quote = engine.broker.get_quote(pos.symbol)
+            except Exception:
+                quote = None
+            rows.append(_holding_card_html(pos, quote))
+        holdings_section = (
+            f'<div class="empty-card"><strong>{len(positions)} holding(s) today.</strong></div>'
+            f'<div class="real-block">{"".join(rows)}</div>'
+        )
+    else:
+        holdings_section = (
+            '<div class="empty-card"><strong>0 holdings today.</strong> '
+            'Your money is safely sitting as cash.</div>' + _HOLDINGS_SAMPLE
+        )
+
+    if all_trades:
+        rows = [_activity_row_html(e, now_ist) for e in all_trades[:10]]
+        activity_section = (
+            f'<div class="empty-card"><strong>{trades_today} trade(s) today.</strong></div>'
+            f'<div class="real-block">{"".join(rows)}</div>'
+        )
+    else:
+        activity_section = (
+            '<div class="empty-card"><strong>0 trades today.</strong> '
+            'New trades appear here the moment they happen.</div>' + _ACTIVITY_SAMPLE
+        )
+
+    universe_size = len(config.universe.symbols)
+    as_of = now_ist.strftime("%a, %d %b &middot; %I:%M %p IST").replace(" 0", " ")
+
+    html = _PAGE_TEMPLATE
+    replacements = {
+        "@@GREETING@@": greeting,
+        "@@AS_OF@@": as_of,
+        "@@BALANCE@@": _inr(equity),
+        "@@CHANGE_ARROW@@": "&#8593;" if change > 0 else ("&#8595;" if change < 0 else "&#8596;"),
+        "@@CHANGE_AMOUNT@@": _signed_inr(change),
+        "@@CHANGE_PCT@@": f"{change_pct:+.1f}%",
+        "@@STARTING_CAPITAL@@": _inr(starting_capital),
+        "@@UNIVERSE_SIZE@@": f"{universe_size:,}",
+        "@@TOTAL_GAIN_LOSS@@": _signed_inr(total_gain_loss),
+        "@@STOCKS_OWNED@@": str(len(positions)),
+        "@@TRADES_TODAY@@": str(trades_today) if trades_today else "&mdash;",
+        "@@TRADES_TOTAL@@": str(total_trades),
+        "@@PROFITABLE@@": f"{profitable}/{len(closed)}" if closed else "&mdash;",
+        "@@HOLDINGS_SECTION@@": holdings_section,
+        "@@ACTIVITY_SECTION@@": activity_section,
+    }
+    for token, value in replacements.items():
+        html = html.replace(token, value)
+    return html
+
+
+_PAGE_TEMPLATE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Trading Account</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F7F5EF; --surface: #FFFFFF; --surface-2: #F1EFE6;
+    --sidebar: #17251F; --sidebar-ink: #C7D4CC; --sidebar-ink-soft: #7E9089;
+    --ink: #1E2A28; --ink-soft: #5C6D69; --ink-faint: #93A099;
+    --border: #E2E4DC; --brand: #1F6F5C; --brand-soft: #DCEAE4;
+    --gold: #B9903A; --gold-soft: #F3E9D3;
+    --profit: #2E8B57; --profit-soft: #E1F0E7;
+    --loss: #C1443D; --loss-soft: #F8E4E2;
+    --shadow: 0 1px 2px rgba(30,42,40,0.04), 0 6px 20px -8px rgba(30,42,40,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1613; --surface: #152420; --surface-2: #1B2C27;
+      --sidebar: #0A100D; --sidebar-ink: #D6E0DA; --sidebar-ink-soft: #66786F;
+      --ink: #EDEFE9; --ink-soft: #93A39D; --ink-faint: #5E716B;
+      --border: #213631; --brand: #3FA98A; --brand-soft: #1B3A31;
+      --gold: #D9B45E; --gold-soft: #332A16;
+      --profit: #4CAF7D; --profit-soft: #17301F;
+      --loss: #E17169; --loss-soft: #34201E;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 24px -8px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1613; --surface: #152420; --surface-2: #1B2C27;
+    --sidebar: #0A100D; --sidebar-ink: #D6E0DA; --sidebar-ink-soft: #66786F;
+    --ink: #EDEFE9; --ink-soft: #93A39D; --ink-faint: #5E716B;
+    --border: #213631; --brand: #3FA98A; --brand-soft: #1B3A31;
+    --gold: #D9B45E; --gold-soft: #332A16;
+    --profit: #4CAF7D; --profit-soft: #17301F;
+    --loss: #E17169; --loss-soft: #34201E;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 24px -8px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Manrope", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+  }
+  .tabular { font-variant-numeric: tabular-nums; }
+  a { color: inherit; text-decoration: none; }
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 232px; flex-shrink: 0; background: var(--sidebar); color: var(--sidebar-ink);
+    padding: 22px 16px; display: flex; flex-direction: column; gap: 26px;
+  }
+  .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
+  .sidebar .brand .mark {
+    width: 32px; height: 32px; border-radius: 9px; background: var(--brand);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 14px;
+  }
+  .sidebar .brand .name { font-weight: 700; font-size: 14.5px; color: #fff; }
+  .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+  .sidebar nav a {
+    display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 600; color: var(--sidebar-ink-soft);
+  }
+  .sidebar nav a .ic { width: 18px; text-align: center; font-size: 14px; }
+  .sidebar nav a.active { background: rgba(255,255,255,0.07); color: #fff; }
+  .sidebar .sidebar-mode { margin-top: auto; padding: 13px 14px; border-radius: 12px; background: rgba(255,255,255,0.05); }
+  .sidebar .sidebar-mode .sm-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sidebar-ink-soft); margin-bottom: 5px; }
+  .sidebar .sidebar-mode .sm-value { font-size: 13px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 6px; }
+  .sidebar .sidebar-mode .sm-value .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .main { flex: 1; min-width: 0; padding: 26px 34px 60px; max-width: 1180px; }
+  .page-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
+  .page-header h1 { font-size: 21px; font-weight: 800; margin: 0; }
+  .page-header .subtitle { font-size: 13px; color: var(--ink-faint); margin-top: 3px; }
+  .as-of { font-size: 12px; color: var(--ink-faint); font-weight: 600; }
+  .hero-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .balance-card {
+    background: linear-gradient(150deg, var(--brand) 0%, var(--brand) 55%, var(--gold) 230%);
+    border-radius: 20px; padding: 26px 28px; color: #FCFBF6; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .balance-card .label { font-size: 13px; opacity: 0.85; font-weight: 600; margin: 0 0 8px; }
+  .balance-card .balance { font-size: 42px; font-weight: 800; margin: 0; letter-spacing: -0.015em; }
+  .balance-card .change-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .balance-card .change-pill {
+    font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 999px;
+    background: rgba(255,255,255,0.18); display: inline-flex; align-items: center; gap: 5px;
+  }
+  .balance-card .change-note { font-size: 12.5px; opacity: 0.8; }
+  .status-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 20px 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; justify-content: center;
+  }
+  .status-card .status-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--gold-soft); color: var(--gold);
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+  }
+  .status-card .status-title { font-size: 14px; font-weight: 700; margin: 8px 0 4px; }
+  .status-card .status-body { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; margin: 0; }
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 22px 24px 18px; box-shadow: var(--shadow); margin-bottom: 16px;
+  }
+  .chart-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+  .chart-head h2 { font-size: 14px; font-weight: 700; margin: 0; }
+  .chart-head .chart-value { font-size: 24px; font-weight: 800; margin: 4px 0 0; }
+  .timeframe-tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 10px; }
+  .timeframe-tabs span { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px; color: var(--ink-faint); }
+  .timeframe-tabs span.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  .chart-svg-wrap { margin-top: 10px; }
+  .chart-caption { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 22px; }
+  .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 16px; box-shadow: var(--shadow); }
+  .stat-tile .stat-label { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 6px; font-weight: 600; }
+  .stat-tile .stat-value { font-size: 19px; font-weight: 800; margin: 0; }
+  .split-row { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; align-items: start; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; }
+  .panel-head h2 { font-size: 14.5px; font-weight: 700; margin: 0; }
+  .panel-body { padding: 0 20px 20px; }
+  .empty-card {
+    background: var(--surface-2); border: 1px dashed var(--border); border-radius: 14px;
+    padding: 18px; text-align: center; color: var(--ink-soft); font-size: 13px; line-height: 1.6; margin-bottom: 14px;
+  }
+  .empty-card strong { color: var(--ink); }
+  .sample-banner { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .sample-tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--gold); background: var(--gold-soft); padding: 4px 9px; border-radius: 7px; flex-shrink: 0;
+  }
+  .sample-note { font-size: 11.5px; color: var(--ink-faint); }
+  .sample-block { opacity: 0.94; }
+  .real-block { }
+  .holding-card {
+    background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border);
+    border-radius: 12px; padding: 13px 15px; margin-bottom: 9px; display: flex; align-items: center; gap: 12px;
+  }
+  .holding-card.is-profit { border-left-color: var(--profit); }
+  .holding-card.is-loss { border-left-color: var(--loss); }
+  .stock-avatar {
+    width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; letter-spacing: -0.01em; background: var(--brand-soft); color: var(--brand);
+  }
+  .holding-mid { flex: 1; min-width: 0; }
+  .holding-mid .h-symbol { font-size: 14px; font-weight: 700; }
+  .holding-mid .h-detail { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+  .holding-right { text-align: right; flex-shrink: 0; }
+  .holding-right .h-value { font-size: 14px; font-weight: 700; }
+  .holding-right .h-pnl { font-size: 12px; font-weight: 700; margin-top: 2px; display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
+  .holding-right .h-pnl.profit { color: var(--profit); }
+  .holding-right .h-pnl.loss { color: var(--loss); }
+  .activity-row {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--border); border-left: 3px solid transparent; padding-left: 10px;
+  }
+  .activity-row:last-child { border-bottom: none; }
+  .activity-row.is-profit { border-left-color: var(--profit); }
+  .activity-row.is-loss { border-left-color: var(--loss); }
+  .activity-badge {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  .activity-badge.buy { background: var(--brand-soft); color: var(--brand); }
+  .activity-badge.sell { background: var(--gold-soft); color: var(--gold); }
+  .activity-main { flex: 1; min-width: 0; }
+  .activity-main .a-title { font-size: 13px; font-weight: 600; }
+  .activity-main .a-sub { font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
+  .activity-pnl { font-size: 13px; font-weight: 700; flex-shrink: 0; text-align: right; }
+  .activity-pnl .a-pct { display: flex; align-items: center; gap: 3px; justify-content: flex-end; font-size: 10.5px; font-weight: 600; opacity: 0.8; margin-top: 1px; }
+  .activity-pnl .a-pending { color: var(--ink-faint); font-weight: 600; font-size: 12px; }
+  .activity-row.is-profit .activity-pnl { color: var(--profit); }
+  .activity-row.is-loss .activity-pnl { color: var(--loss); }
+  .trust-footer {
+    margin-top: 8px; padding: 18px 20px; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 16px; font-size: 12.5px; line-height: 1.7; color: var(--ink-soft);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .trust-footer strong { color: var(--ink); display: block; margin-bottom: 3px; font-size: 12.5px; }
+  .trust-footer .row { display: flex; align-items: flex-start; gap: 8px; }
+  .trust-footer .check { color: var(--brand); flex-shrink: 0; font-weight: 800; }
+  @media (max-width: 920px) {
+    .sidebar { display: none; }
+    .main { padding: 18px 16px 50px; max-width: 560px; margin: 0 auto; }
+    .hero-row, .split-row { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: repeat(2, 1fr); }
+    .trust-footer { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="mark">B</div><div class="name">NSE Bot</div></div>
+    <nav>
+      <a href="#" class="active"><span class="ic">&#9673;</span> Overview</a>
+      <a href="#"><span class="ic">&#9642;</span> Holdings</a>
+      <a href="#"><span class="ic">&#8635;</span> Activity</a>
+      <a href="#"><span class="ic">&#9776;</span> Performance</a>
+    </nav>
+    <div class="sidebar-mode">
+      <div class="sm-label">Account Mode</div>
+      <div class="sm-value"><span class="dot"></span> Practice &mdash; no real money</div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Overview</h1>
+        <div class="subtitle">@@GREETING@@ &mdash; here's how your bot is doing</div>
+      </div>
+      <div class="as-of">Updated @@AS_OF@@</div>
+    </div>
+    <div class="hero-row">
+      <div class="balance-card">
+        <div>
+          <p class="label">Your account balance</p>
+          <p class="balance tabular">@@BALANCE@@</p>
+        </div>
+        <div class="change-row">
+          <span class="change-pill tabular">@@CHANGE_ARROW@@ @@CHANGE_AMOUNT@@ (@@CHANGE_PCT@@)</span>
+          <span class="change-note">Started with @@STARTING_CAPITAL@@</span>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-icon">&#128269;</div>
+        <div>
+          <p class="status-title">Watching all @@UNIVERSE_SIZE@@ NSE stocks</p>
+          <p class="status-body">Runs automatically every weekday after market close. It only buys when genuinely confident &mdash; most days, few or none qualify. That's normal, not a malfunction.</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head">
+        <div><h2>Portfolio Value</h2><p class="chart-value tabular">@@BALANCE@@</p></div>
+        <div class="timeframe-tabs"><span>1W</span><span>1M</span><span class="active">3M</span><span>1Y</span><span>ALL</span></div>
+      </div>
+      <div class="sample-banner">
+        <span class="sample-tag">Sample</span>
+        <span class="sample-note">Not your data &mdash; a daily equity-curve history isn't tracked yet. This shows the shape once it is.</span>
+      </div>
+      <div class="chart-svg-wrap sample-block">
+        <svg viewBox="0 0 1000 220" width="100%" height="220" role="img" aria-label="Sample portfolio value line chart">
+          <line x1="0" y1="40" x2="1000" y2="40" stroke="var(--border)" stroke-width="1"></line>
+          <line x1="0" y1="100" x2="1000" y2="100" stroke="var(--border)" stroke-width="1"></line>
+          <line x1="0" y1="160" x2="1000" y2="160" stroke="var(--border)" stroke-width="1"></line>
+          <path d="M0,168 L120,150 L240,120 L360,158 L480,175 L600,140 L720,95 L840,70 L1000,45 L1000,220 L0,220 Z" fill="var(--profit)" opacity="0.08"></path>
+          <path d="M0,168 L120,150 L240,120 L360,158 L480,175 L600,140 L720,95 L840,70 L1000,45" fill="none" stroke="var(--profit)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+      <p class="chart-caption">Illustrative only &mdash; not a forecast or a promise.</p>
+    </div>
+    <div class="stat-strip">
+      <div class="stat-tile"><p class="stat-label">Total gain/loss</p><p class="stat-value tabular">@@TOTAL_GAIN_LOSS@@</p></div>
+      <div class="stat-tile"><p class="stat-label">Stocks you own</p><p class="stat-value tabular">@@STOCKS_OWNED@@</p></div>
+      <div class="stat-tile"><p class="stat-label">Stocks checked, daily</p><p class="stat-value tabular">@@UNIVERSE_SIZE@@</p></div>
+      <div class="stat-tile"><p class="stat-label">Trades today</p><p class="stat-value tabular">@@TRADES_TODAY@@</p></div>
+      <div class="stat-tile"><p class="stat-label">Trades in total</p><p class="stat-value tabular">@@TRADES_TOTAL@@</p></div>
+      <div class="stat-tile"><p class="stat-label">Of those, profitable</p><p class="stat-value tabular">@@PROFITABLE@@</p></div>
+    </div>
+    <div class="split-row">
+      <div class="panel">
+        <div class="panel-head"><h2>What You Own</h2></div>
+        <div class="panel-body">@@HOLDINGS_SECTION@@</div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Recent Activity</h2></div>
+        <div class="panel-body">@@ACTIVITY_SECTION@@</div>
+      </div>
+    </div>
+    <div class="trust-footer">
+      <div class="row"><span class="check">&#10003;</span><span><strong>Practice account</strong>No real money is ever used &mdash; a safe way to see how your bot performs.</span></div>
+      <div class="row"><span class="check">&#10003;</span><span><strong>Never forced</strong>Your bot only trades when confident, and skips days when nothing looks safe.</span></div>
+      <div class="row"><span class="check">&#10003;</span><span><strong>Not advice</strong>Past results, practice or real, never guarantee future ones.</span></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+"""
+
+
+def write_customer_html(engine: PaperTradingEngine, config: Config, path: str) -> str:
+    import os
+
+    html = render_customer_html(engine, config)
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(html)
+    return path
