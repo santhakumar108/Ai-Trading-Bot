@@ -108,6 +108,19 @@
   .timeframe-tabs span.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
   .chart-svg-wrap { margin-top: 10px; }
   .chart-caption { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .section-title { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .period-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .period-card {
+    background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--border);
+    border-radius: 14px; padding: 16px 16px; box-shadow: var(--shadow);
+  }
+  .period-card.profit { border-top-color: var(--profit); }
+  .period-card.loss { border-top-color: var(--loss); }
+  .period-label { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .period-value { font-size: 22px; font-weight: 800; margin: 0; }
+  .period-value.profit { color: var(--profit); }
+  .period-value.loss { color: var(--loss); }
+  .period-sub { font-size: 11.5px; color: var(--ink-faint); margin: 4px 0 0; }
   .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 22px; }
   .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 16px; box-shadow: var(--shadow); }
   .stat-tile .stat-label { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 6px; font-weight: 600; }
@@ -181,6 +194,7 @@
     .sidebar { display: none; }
     .main { padding: 18px 16px 50px; max-width: 560px; margin: 0 auto; }
     .hero-row, .split-row { grid-template-columns: 1fr; }
+    .period-strip { grid-template-columns: repeat(2, 1fr); }
     .stat-strip { grid-template-columns: repeat(2, 1fr); }
     .trust-footer { grid-template-columns: 1fr; }
   }
@@ -194,7 +208,7 @@
       <a href="#" class="active"><span class="ic">&#9673;</span> Overview</a>
       <a href="#"><span class="ic">&#9642;</span> Holdings</a>
       <a href="#"><span class="ic">&#8635;</span> Activity</a>
-      <a href="#"><span class="ic">&#9776;</span> Performance</a>
+      <a href="#performance"><span class="ic">&#9776;</span> Performance</a>
     </nav>
     <div class="sidebar-mode">
       <div class="sm-label">Account Mode</div>
@@ -207,7 +221,7 @@
         <h1>Overview</h1>
         <div class="subtitle">Good afternoon &mdash; here's how your bot is doing</div>
       </div>
-      <div class="as-of">Updated Wed, 9 Sep &middot; 4:16 PM IST</div>
+      <div class="as-of">Updated Wed, 9 Sep &middot; 4:28 PM IST</div>
     </div>
     <div class="hero-row">
       <div class="balance-card">
@@ -227,6 +241,10 @@
           <p class="status-body">Runs automatically every weekday after market close. It only buys when genuinely confident &mdash; most days, few or none qualify. That's normal, not a malfunction.</p>
         </div>
       </div>
+    </div>
+    <p class="section-title" id="performance">Performance</p>
+    <div class="period-strip">
+      <div class="period-card profit"><p class="period-label">Today</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card profit"><p class="period-label">This Week</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card profit"><p class="period-label">This Month</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card profit"><p class="period-label">All Time</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div>
     </div>
     <div class="chart-card">
       <div class="chart-head">

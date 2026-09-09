@@ -85,6 +85,41 @@ def _relative_day_label(d, today) -> str:
     return d.strftime("%d %b")
 
 
+def _period_pnl_summary(closed: List[JournalEntry], now_ist: datetime) -> dict:
+    """Realized P&L (closed trades only) grouped by the period their EXIT
+    fell in, IST-aware. Unrealized P&L from still-open positions belongs
+    to no specific closing day, so it's deliberately excluded here (it
+    stays part of the "Total gain/loss" stat-tile, which already blends
+    both) -- these period figures are strictly "money actually locked in"
+    for that day/week/month."""
+    today = now_ist.date()
+    week_start = today - timedelta(days=today.weekday())
+    month_start = today.replace(day=1)
+
+    def _sum_and_count(predicate):
+        matched = [e for e in closed if e.exit_time and predicate(_to_ist(e.exit_time).date())]
+        return sum(e.net_pnl or 0.0 for e in matched), len(matched)
+
+    return {
+        "Today": _sum_and_count(lambda d: d == today),
+        "This Week": _sum_and_count(lambda d: d >= week_start),
+        "This Month": _sum_and_count(lambda d: d >= month_start),
+        "All Time": (sum(e.net_pnl or 0.0 for e in closed), len(closed)),
+    }
+
+
+def _period_card_html(label: str, pnl: float, count: int) -> str:
+    cls = "profit" if pnl >= 0 else "loss"
+    trade_word = "trade" if count == 1 else "trades"
+    return (
+        f'<div class="period-card {cls}">'
+        f'<p class="period-label">{label}</p>'
+        f'<p class="period-value {cls} tabular">{_signed_inr(pnl)}</p>'
+        f'<p class="period-sub">{count} closed {trade_word}</p>'
+        f'</div>'
+    )
+
+
 def _holding_card_html(pos: Position, current_price: Optional[float]) -> str:
     price = current_price if current_price is not None else pos.average_price
     market_value = price * pos.quantity
@@ -228,6 +263,11 @@ def render_customer_html(engine: PaperTradingEngine, config: Config) -> str:
     profitable = sum(1 for e in closed if (e.net_pnl or 0.0) > 0)
     total_gain_loss = sum(e.net_pnl or 0.0 for e in closed) + engine.broker.unrealized_pnl()
 
+    period_summary = _period_pnl_summary(closed, now_ist)
+    period_section = "".join(
+        _period_card_html(label, pnl, count) for label, (pnl, count) in period_summary.items()
+    )
+
     if positions:
         rows = []
         for pos in positions:
@@ -278,6 +318,7 @@ def render_customer_html(engine: PaperTradingEngine, config: Config) -> str:
         "@@PROFITABLE@@": f"{profitable}/{len(closed)}" if closed else "&mdash;",
         "@@HOLDINGS_SECTION@@": holdings_section,
         "@@ACTIVITY_SECTION@@": activity_section,
+        "@@PERIOD_SECTION@@": period_section,
     }
     for token, value in replacements.items():
         html = html.replace(token, value)
@@ -394,6 +435,19 @@ _PAGE_TEMPLATE = """<!doctype html>
   .timeframe-tabs span.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
   .chart-svg-wrap { margin-top: 10px; }
   .chart-caption { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .section-title { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .period-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .period-card {
+    background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--border);
+    border-radius: 14px; padding: 16px 16px; box-shadow: var(--shadow);
+  }
+  .period-card.profit { border-top-color: var(--profit); }
+  .period-card.loss { border-top-color: var(--loss); }
+  .period-label { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .period-value { font-size: 22px; font-weight: 800; margin: 0; }
+  .period-value.profit { color: var(--profit); }
+  .period-value.loss { color: var(--loss); }
+  .period-sub { font-size: 11.5px; color: var(--ink-faint); margin: 4px 0 0; }
   .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 22px; }
   .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 16px; box-shadow: var(--shadow); }
   .stat-tile .stat-label { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 6px; font-weight: 600; }
@@ -467,6 +521,7 @@ _PAGE_TEMPLATE = """<!doctype html>
     .sidebar { display: none; }
     .main { padding: 18px 16px 50px; max-width: 560px; margin: 0 auto; }
     .hero-row, .split-row { grid-template-columns: 1fr; }
+    .period-strip { grid-template-columns: repeat(2, 1fr); }
     .stat-strip { grid-template-columns: repeat(2, 1fr); }
     .trust-footer { grid-template-columns: 1fr; }
   }
@@ -480,7 +535,7 @@ _PAGE_TEMPLATE = """<!doctype html>
       <a href="#" class="active"><span class="ic">&#9673;</span> Overview</a>
       <a href="#"><span class="ic">&#9642;</span> Holdings</a>
       <a href="#"><span class="ic">&#8635;</span> Activity</a>
-      <a href="#"><span class="ic">&#9776;</span> Performance</a>
+      <a href="#performance"><span class="ic">&#9776;</span> Performance</a>
     </nav>
     <div class="sidebar-mode">
       <div class="sm-label">Account Mode</div>
@@ -513,6 +568,10 @@ _PAGE_TEMPLATE = """<!doctype html>
           <p class="status-body">Runs automatically every weekday after market close. It only buys when genuinely confident &mdash; most days, few or none qualify. That's normal, not a malfunction.</p>
         </div>
       </div>
+    </div>
+    <p class="section-title" id="performance">Performance</p>
+    <div class="period-strip">
+      @@PERIOD_SECTION@@
     </div>
     <div class="chart-card">
       <div class="chart-head">

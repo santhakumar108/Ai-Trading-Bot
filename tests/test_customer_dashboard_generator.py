@@ -27,6 +27,57 @@ def make_fixed_quote_md(price: float) -> MarketDataProvider:
     return MarketDataProvider(fetch_fn=fetch)
 
 
+def test_period_pnl_summary_buckets_by_day_week_month(tmp_path):
+    from dashboard.customer_report import _period_pnl_summary
+
+    now_ist = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+    today = now_ist.date()
+    week_start = today - timedelta(days=today.weekday())
+    prior_month_day = today.replace(day=1) - timedelta(days=1)  # last day of the PREVIOUS month
+
+    def _closed(trade_id, exit_date, pnl):
+        exit_dt = datetime.combine(exit_date, datetime.min.time(), tzinfo=timezone.utc) + timedelta(hours=10)
+        return JournalEntry(
+            trade_id=trade_id, symbol="X", side="BUY", entry_time=exit_dt - timedelta(hours=1),
+            entry_price=100.0, stop_loss=95.0, target=110.0, quantity=1,
+            exit_time=exit_dt, exit_price=110.0, exit_reason="TARGET",
+            fees=0.0, gross_pnl=pnl, net_pnl=pnl,
+        )
+
+    closed = [
+        _closed("t1", today, 50.0),
+        _closed("t2", week_start, 30.0),        # in-week (Monday); counted in week+month unless today IS Monday, where it's also "today"
+        _closed("t3", prior_month_day, 999.0),  # previous month -- must be excluded from today/week/month
+    ]
+    summary = _period_pnl_summary(closed, now_ist)
+
+    today_pnl, today_n = summary["Today"]
+    expected_today_pnl = 50.0 + (30.0 if week_start == today else 0.0)
+    expected_today_n = 1 + (1 if week_start == today else 0)
+    assert today_pnl == pytest.approx(expected_today_pnl)
+    assert today_n == expected_today_n
+
+    # t1 and t2 are always in the current week; t3 (previous month) never is.
+    week_pnl, week_n = summary["This Week"]
+    assert week_pnl == pytest.approx(80.0)
+    assert week_n == 2
+
+    # t3 (previous month) is always excluded from "this month"; t2
+    # (week_start) is only in the current month if the current week
+    # doesn't cross a month boundary.
+    month_start = today.replace(day=1)
+    t2_in_month = week_start >= month_start
+    expected_month_pnl = 50.0 + (30.0 if t2_in_month else 0.0)
+    expected_month_n = 1 + (1 if t2_in_month else 0)
+    month_pnl, month_n = summary["This Month"]
+    assert month_pnl == pytest.approx(expected_month_pnl)
+    assert month_n == expected_month_n
+
+    all_pnl, all_n = summary["All Time"]
+    assert all_pnl == pytest.approx(1079.0)
+    assert all_n == 3
+
+
 def test_empty_account_shows_empty_state_and_sample_labels(tmp_path):
     config = Config()
     md = make_fixed_quote_md(100.0)
