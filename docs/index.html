@@ -52,9 +52,11 @@
   }
   .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
   .sidebar .brand .mark {
-    width: 32px; height: 32px; border-radius: 9px; background: var(--brand);
-    display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 14px;
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--brand), var(--gold));
+    display: flex; align-items: center; justify-content: center; color: #fff;
   }
+  .sidebar .brand .mark svg { width: 18px; height: 18px; }
   .sidebar .brand .name { font-weight: 700; font-size: 14.5px; color: #fff; }
   .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
   .sidebar nav a {
@@ -71,7 +73,27 @@
   .page-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
   .page-header h1 { font-size: 21px; font-weight: 800; margin: 0; }
   .page-header .subtitle { font-size: 13px; color: var(--ink-faint); margin-top: 3px; }
-  .as-of { font-size: 12px; color: var(--ink-faint); font-weight: 600; }
+  .as-of { font-size: 12px; color: var(--ink-faint); font-weight: 600; display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--profit); box-shadow: 0 0 0 0 rgba(46,139,87,0.5); animation: livepulse 2s infinite; }
+  @keyframes livepulse {
+    0% { box-shadow: 0 0 0 0 rgba(46,139,87,0.45); }
+    70% { box-shadow: 0 0 0 6px rgba(46,139,87,0); }
+    100% { box-shadow: 0 0 0 0 rgba(46,139,87,0); }
+  }
+  .helper-banner {
+    display: flex; align-items: flex-start; gap: 12px; background: var(--brand-soft); border: 1px solid var(--border);
+    border-radius: 16px; padding: 14px 18px; margin-bottom: 16px;
+  }
+  .helper-banner .hb-icon { font-size: 18px; flex-shrink: 0; }
+  .helper-banner p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink); }
+  .helper-banner strong { color: var(--brand); }
+  .legend-row { display: flex; gap: 18px; align-items: center; margin: -6px 0 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-soft); font-weight: 600; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .legend-dot.profit { background: var(--profit); }
+  .legend-dot.loss { background: var(--loss); }
+  .legend-dot.neutral { background: var(--ink-faint); }
+  .panel-sub { font-size: 11.5px; color: var(--ink-faint); margin: -12px 20px 12px; }
   .hero-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px; }
   .balance-card {
     background: linear-gradient(150deg, var(--brand) 0%, var(--brand) 55%, var(--gold) 230%);
@@ -116,10 +138,12 @@
   }
   .period-card.profit { border-top-color: var(--profit); }
   .period-card.loss { border-top-color: var(--loss); }
+  .period-card.neutral { border-top-color: var(--ink-faint); }
   .period-label { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.03em; }
   .period-value { font-size: 22px; font-weight: 800; margin: 0; }
   .period-value.profit { color: var(--profit); }
   .period-value.loss { color: var(--loss); }
+  .period-value.neutral { color: var(--ink-faint); }
   .period-sub { font-size: 11.5px; color: var(--ink-faint); margin: 4px 0 0; }
   .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 22px; }
   .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 16px; box-shadow: var(--shadow); }
@@ -203,7 +227,7 @@
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="mark">B</div><div class="name">NSE Bot</div></div>
+    <div class="brand"><div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="name">NSE Bot</div></div>
     <nav>
       <a href="#" class="active"><span class="ic">&#9673;</span> Overview</a>
       <a href="#"><span class="ic">&#9642;</span> Holdings</a>
@@ -219,9 +243,13 @@
     <div class="page-header">
       <div>
         <h1>Overview</h1>
-        <div class="subtitle">Good evening &mdash; here's how your bot is doing</div>
+        <div class="subtitle">Good afternoon &mdash; here's how your bot is doing</div>
       </div>
-      <div class="as-of">Updated Fri, 11 Sep &middot; 8:47 PM IST</div>
+      <div class="as-of"><span class="live-dot"></span>Updated Sat, 12 Sep &middot; 12:56 PM IST</div>
+    </div>
+    <div class="helper-banner">
+      <span class="hb-icon">&#128161;</span>
+      <p><strong>New to this?</strong> Your balance is practice money. When it turns <strong style="color:var(--profit)">green</strong>, your bot made money; <strong style="color:var(--loss)">red</strong> means it lost money. "Closed trade" = a stock your bot bought and later sold.</p>
     </div>
     <div class="hero-row">
       <div class="balance-card">
@@ -243,8 +271,13 @@
       </div>
     </div>
     <p class="section-title" id="performance">Performance</p>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-dot profit"></span> Made money</span>
+      <span class="legend-item"><span class="legend-dot loss"></span> Lost money</span>
+      <span class="legend-item"><span class="legend-dot neutral"></span> No activity yet</span>
+    </div>
     <div class="period-strip">
-      <div class="period-card profit"><p class="period-label">Today</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card profit"><p class="period-label">This Week</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card profit"><p class="period-label">This Month</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card profit"><p class="period-label">All Time</p><p class="period-value profit tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div>
+      <div class="period-card neutral"><p class="period-label">Today</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card neutral"><p class="period-label">This Week</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card neutral"><p class="period-label">This Month</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card neutral"><p class="period-label">All Time</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div>
     </div>
     <div class="chart-card">
       <div class="chart-head">
@@ -277,63 +310,17 @@
     <div class="split-row">
       <div class="panel">
         <div class="panel-head"><h2>What You Own</h2></div>
+        <p class="panel-sub">Stocks your bot has bought and is still holding</p>
         <div class="panel-body"><div class="empty-card"><strong>0 holdings today.</strong> Your money is safely sitting as cash.</div>
-<div class="sample-banner">
-  <span class="sample-tag">Sample</span>
-  <span class="sample-note">The exact format each holding will use</span>
-</div>
-<div class="sample-block">
-  <div class="holding-card is-profit">
-    <div class="stock-avatar">REL</div>
-    <div class="holding-mid">
-      <p class="h-symbol">RELIANCE &middot; LONG</p>
-      <p class="h-detail">40 shares &middot; bought at &#8377;1,250.00</p>
-    </div>
-    <div class="holding-right">
-      <p class="h-value tabular">&#8377;51,200</p>
-      <p class="h-pnl profit tabular">+&#8377;2,400 (+4.9%)</p>
-    </div>
-  </div>
-  <div class="holding-card is-loss">
-    <div class="stock-avatar">TCS</div>
-    <div class="holding-mid">
-      <p class="h-symbol">TCS &middot; LONG</p>
-      <p class="h-detail">12 shares &middot; bought at &#8377;3,500.00</p>
-    </div>
-    <div class="holding-right">
-      <p class="h-value tabular">&#8377;40,800</p>
-      <p class="h-pnl loss tabular">-&#8377;1,200 (-2.9%)</p>
-    </div>
-  </div>
-</div>
-</div>
+<div class="sample-banner"><span class="sample-tag">Sample</span><span class="sample-note">The exact format each holding will use</span></div>
+<div class="sample-block"><div class="holding-card is-profit"><div class="stock-avatar">REL</div><div class="holding-mid"><p class="h-symbol">RELIANCE &middot; LONG</p><p class="h-detail">40 shares &middot; bought at &#8377;1,250.00</p></div><div class="holding-right"><p class="h-value tabular">&#8377;51,200</p><p class="h-pnl profit tabular">+&#8377;2,400 (+4.9%)</p></div></div><div class="holding-card is-loss"><div class="stock-avatar">TCS</div><div class="holding-mid"><p class="h-symbol">TCS &middot; LONG</p><p class="h-detail">12 shares &middot; bought at &#8377;3,500.00</p></div><div class="holding-right"><p class="h-value tabular">&#8377;40,800</p><p class="h-pnl loss tabular">-&#8377;1,200 (-2.9%)</p></div></div></div></div>
       </div>
       <div class="panel">
         <div class="panel-head"><h2>Recent Activity</h2></div>
+        <p class="panel-sub">Every buy and sell your bot has made, most recent first</p>
         <div class="panel-body"><div class="empty-card"><strong>0 trades today.</strong> New trades appear here the moment they happen.</div>
-<div class="sample-banner">
-  <span class="sample-tag">Sample</span>
-  <span class="sample-note">What a real trade looks like</span>
-</div>
-<div class="sample-block">
-  <div class="activity-row is-profit">
-    <div class="activity-badge buy">B</div>
-    <div class="activity-main">
-      <p class="a-title">Bought RELIANCE</p>
-      <p class="a-sub">Today, 4:12 PM &middot; 40 @ &#8377;1,250</p>
-    </div>
-    <div class="activity-pnl profit tabular">+&#8377;2,400<span class="a-pct">&#9650; 4.9%</span></div>
-  </div>
-  <div class="activity-row is-loss">
-    <div class="activity-badge sell">S</div>
-    <div class="activity-main">
-      <p class="a-title">Sold INFY</p>
-      <p class="a-sub">Yesterday, 4:07 PM &middot; 25 @ &#8377;1,480</p>
-    </div>
-    <div class="activity-pnl loss tabular">-&#8377;875<span class="a-pct">&#9660; 2.4%</span></div>
-  </div>
-</div>
-</div>
+<div class="sample-banner"><span class="sample-tag">Sample</span><span class="sample-note">What a real trade looks like</span></div>
+<div class="sample-block"><div class="activity-row is-profit"><div class="activity-badge buy">B</div><div class="activity-main"><p class="a-title">Bought RELIANCE</p><p class="a-sub">Today, 4:12 PM &middot; 40 @ &#8377;1,250</p></div><div class="activity-pnl tabular">+&#8377;2,400<span class="a-pct">&#9650; 4.9%</span></div></div><div class="activity-row is-loss"><div class="activity-badge sell">S</div><div class="activity-main"><p class="a-title">Sold INFY</p><p class="a-sub">Yesterday, 4:07 PM &middot; 25 @ &#8377;1,480</p></div><div class="activity-pnl tabular">-&#8377;875<span class="a-pct">&#9660; 2.4%</span></div></div></div></div>
       </div>
     </div>
     <div class="trust-footer">
