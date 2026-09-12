@@ -109,7 +109,7 @@ def _period_pnl_summary(closed: List[JournalEntry], now_ist: datetime) -> dict:
 
 
 def _period_card_html(label: str, pnl: float, count: int) -> str:
-    cls = "profit" if pnl >= 0 else "loss"
+    cls = "neutral" if pnl == 0 else ("profit" if pnl > 0 else "loss")
     trade_word = "trade" if count == 1 else "trades"
     return (
         f'<div class="period-card {cls}">'
@@ -379,9 +379,11 @@ _PAGE_TEMPLATE = """<!doctype html>
   }
   .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
   .sidebar .brand .mark {
-    width: 32px; height: 32px; border-radius: 9px; background: var(--brand);
-    display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 14px;
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--brand), var(--gold));
+    display: flex; align-items: center; justify-content: center; color: #fff;
   }
+  .sidebar .brand .mark svg { width: 18px; height: 18px; }
   .sidebar .brand .name { font-weight: 700; font-size: 14.5px; color: #fff; }
   .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
   .sidebar nav a {
@@ -398,7 +400,27 @@ _PAGE_TEMPLATE = """<!doctype html>
   .page-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
   .page-header h1 { font-size: 21px; font-weight: 800; margin: 0; }
   .page-header .subtitle { font-size: 13px; color: var(--ink-faint); margin-top: 3px; }
-  .as-of { font-size: 12px; color: var(--ink-faint); font-weight: 600; }
+  .as-of { font-size: 12px; color: var(--ink-faint); font-weight: 600; display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--profit); box-shadow: 0 0 0 0 rgba(46,139,87,0.5); animation: livepulse 2s infinite; }
+  @keyframes livepulse {
+    0% { box-shadow: 0 0 0 0 rgba(46,139,87,0.45); }
+    70% { box-shadow: 0 0 0 6px rgba(46,139,87,0); }
+    100% { box-shadow: 0 0 0 0 rgba(46,139,87,0); }
+  }
+  .helper-banner {
+    display: flex; align-items: flex-start; gap: 12px; background: var(--brand-soft); border: 1px solid var(--border);
+    border-radius: 16px; padding: 14px 18px; margin-bottom: 16px;
+  }
+  .helper-banner .hb-icon { font-size: 18px; flex-shrink: 0; }
+  .helper-banner p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink); }
+  .helper-banner strong { color: var(--brand); }
+  .legend-row { display: flex; gap: 18px; align-items: center; margin: -6px 0 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-soft); font-weight: 600; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .legend-dot.profit { background: var(--profit); }
+  .legend-dot.loss { background: var(--loss); }
+  .legend-dot.neutral { background: var(--ink-faint); }
+  .panel-sub { font-size: 11.5px; color: var(--ink-faint); margin: -12px 20px 12px; }
   .hero-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px; }
   .balance-card {
     background: linear-gradient(150deg, var(--brand) 0%, var(--brand) 55%, var(--gold) 230%);
@@ -443,10 +465,12 @@ _PAGE_TEMPLATE = """<!doctype html>
   }
   .period-card.profit { border-top-color: var(--profit); }
   .period-card.loss { border-top-color: var(--loss); }
+  .period-card.neutral { border-top-color: var(--ink-faint); }
   .period-label { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.03em; }
   .period-value { font-size: 22px; font-weight: 800; margin: 0; }
   .period-value.profit { color: var(--profit); }
   .period-value.loss { color: var(--loss); }
+  .period-value.neutral { color: var(--ink-faint); }
   .period-sub { font-size: 11.5px; color: var(--ink-faint); margin: 4px 0 0; }
   .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 22px; }
   .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 16px; box-shadow: var(--shadow); }
@@ -530,7 +554,7 @@ _PAGE_TEMPLATE = """<!doctype html>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="mark">B</div><div class="name">NSE Bot</div></div>
+    <div class="brand"><div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="name">NSE Bot</div></div>
     <nav>
       <a href="#" class="active"><span class="ic">&#9673;</span> Overview</a>
       <a href="#"><span class="ic">&#9642;</span> Holdings</a>
@@ -548,7 +572,11 @@ _PAGE_TEMPLATE = """<!doctype html>
         <h1>Overview</h1>
         <div class="subtitle">@@GREETING@@ &mdash; here's how your bot is doing</div>
       </div>
-      <div class="as-of">Updated @@AS_OF@@</div>
+      <div class="as-of"><span class="live-dot"></span>Updated @@AS_OF@@</div>
+    </div>
+    <div class="helper-banner">
+      <span class="hb-icon">&#128161;</span>
+      <p><strong>New to this?</strong> Your balance is practice money. When it turns <strong style="color:var(--profit)">green</strong>, your bot made money; <strong style="color:var(--loss)">red</strong> means it lost money. "Closed trade" = a stock your bot bought and later sold.</p>
     </div>
     <div class="hero-row">
       <div class="balance-card">
@@ -570,6 +598,11 @@ _PAGE_TEMPLATE = """<!doctype html>
       </div>
     </div>
     <p class="section-title" id="performance">Performance</p>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-dot profit"></span> Made money</span>
+      <span class="legend-item"><span class="legend-dot loss"></span> Lost money</span>
+      <span class="legend-item"><span class="legend-dot neutral"></span> No activity yet</span>
+    </div>
     <div class="period-strip">
       @@PERIOD_SECTION@@
     </div>
@@ -604,10 +637,12 @@ _PAGE_TEMPLATE = """<!doctype html>
     <div class="split-row">
       <div class="panel">
         <div class="panel-head"><h2>What You Own</h2></div>
+        <p class="panel-sub">Stocks your bot has bought and is still holding</p>
         <div class="panel-body">@@HOLDINGS_SECTION@@</div>
       </div>
       <div class="panel">
         <div class="panel-head"><h2>Recent Activity</h2></div>
+        <p class="panel-sub">Every buy and sell your bot has made, most recent first</p>
         <div class="panel-body">@@ACTIVITY_SECTION@@</div>
       </div>
     </div>
