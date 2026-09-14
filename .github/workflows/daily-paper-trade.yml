@@ -1,6 +1,13 @@
 name: Daily Paper Trading (Full NSE Universe)
 
-# Runs weekdays shortly after NSE market close (4:00 PM IST = 10:30 UTC).
+# Primary trigger: weekdays shortly after NSE market close (4:00 PM IST =
+# 10:30 UTC). Catch-up trigger: 6:00 PM IST (12:30 UTC), in case the
+# primary trigger was delayed or skipped -- GitHub's free scheduled
+# workflows are documented as best-effort, not guaranteed to fire at the
+# exact minute (or at all, under high platform load). The "Skip if
+# already ran today" step makes the catch-up a true no-op on a normal day
+# (when the primary already succeeded), so this costs nothing extra most
+# days and just adds resilience on the days GitHub's scheduler is late.
 # Scans the full ~1367-symbol NSE EQ universe (config/full_universe.yaml)
 # using the SAME PaperBroker-only pipeline as the local run -- this
 # workflow never places a real order and never touches any live broker.
@@ -8,6 +15,7 @@ name: Daily Paper Trading (Full NSE Universe)
 on:
   schedule:
     - cron: "30 10 * * 1-5"
+    - cron: "30 12 * * 1-5"
   workflow_dispatch: {}  # allows a manual "Run workflow" click for testing
 
 permissions:
@@ -21,15 +29,29 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Skip if today's run already completed
+        id: check
+        run: |
+          today=$(TZ='Asia/Kolkata' date '+%Y-%m-%d')
+          if git log --oneline -20 | grep -q "Daily paper-trade run: $today"; then
+            echo "already_ran=true" >> "$GITHUB_OUTPUT"
+            echo "Today's ($today) run already completed earlier -- this trigger is a no-op catch-up."
+          else
+            echo "already_ran=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.check.outputs.already_ran != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
+        if: steps.check.outputs.already_ran != 'true'
         run: pip install -r requirements.txt
 
       - name: Run daily paper trade (full universe)
+        if: steps.check.outputs.already_ran != 'true'
         run: |
           mkdir -p logs
           {
@@ -40,15 +62,17 @@ jobs:
           } >> logs/paper_trade_run_log.txt 2>&1
 
       - name: Generate customer dashboard (docs/index.html, served by GitHub Pages)
+        if: steps.check.outputs.already_ran != 'true'
         run: python main.py --config config/full_universe.yaml customer-dashboard --html docs/index.html
 
       - name: Commit updated logs + dashboard
+        if: steps.check.outputs.already_ran != 'true'
         run: |
           git config user.name "nse-bot-actions"
           git config user.email "actions@users.noreply.github.com"
           git add -f logs/decision_log.csv logs/paper_trade_journal.csv logs/paper_trade_run_log.txt docs/index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Daily paper-trade run: $(date '+%Y-%m-%d')"
+          git commit -m "Daily paper-trade run: $(TZ='Asia/Kolkata' date '+%Y-%m-%d')"
           # This run can take hours; the remote may have moved (a manual
           # push, or an overlapping run) since checkout -- rebase onto
           # the latest main before pushing, retrying once, so a real
