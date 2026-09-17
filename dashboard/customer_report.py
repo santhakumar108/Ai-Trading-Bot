@@ -136,7 +136,10 @@ def _holding_card_html(pos: Position, current_price: Optional[float]) -> str:
         f'<div class="stock-avatar">{_avatar(pos.symbol)}</div>'
         f'<div class="holding-mid">'
         f'<p class="h-symbol">{_short_symbol(pos.symbol)} &middot; {pos.side}</p>'
-        f'<p class="h-detail">{pos.quantity} shares &middot; bought at {_inr(pos.average_price)}</p>'
+        f'<div class="detail-chips">'
+        f'<span class="chip qty">Qty {pos.quantity}</span>'
+        f'<span class="chip price">Bought at {_inr(pos.average_price)}</span>'
+        f'</div>'
         f'</div>'
         f'<div class="holding-right">'
         f'<p class="h-value tabular">{_inr(market_value)}</p>'
@@ -159,20 +162,21 @@ def _activity_row_html(e: JournalEntry, now_ist: datetime) -> str:
         pnl_pct = (pnl / denom * 100) if denom else 0.0
         row_cls = "is-profit" if pnl >= 0 else "is-loss"
         pnl_html = f'{_signed_inr(pnl)}<span class="a-pct">{_pct(pnl_pct)}</span>'
-        sub = f"{day_label}, {time_label} &middot; {e.quantity} @ {_inr(e.exit_price or 0.0)}"
+        price_chip = f'<span class="chip price">Sold at {_inr(e.exit_price or 0.0)}</span>'
     else:
         verb = "Bought" if e.side.upper() == "BUY" else "Sold short"
         badge_letter, badge_cls = "B", "buy"
         row_cls = ""
         pnl_html = '<span class="a-pending">Still open</span>'
-        sub = f"{day_label}, {time_label} &middot; {e.quantity} @ {_inr(e.entry_price)}"
+        price_chip = f'<span class="chip price">Bought at {_inr(e.entry_price)}</span>'
 
     return (
         f'<div class="activity-row {row_cls}">'
         f'<div class="activity-badge {badge_cls}">{badge_letter}</div>'
         f'<div class="activity-main">'
         f'<p class="a-title">{verb} {_short_symbol(e.symbol)}</p>'
-        f'<p class="a-sub">{sub}</p>'
+        f'<p class="a-sub">{day_label}, {time_label}</p>'
+        f'<div class="detail-chips"><span class="chip qty">Qty {e.quantity}</span>{price_chip}</div>'
         f'</div>'
         f'<div class="activity-pnl tabular">{pnl_html}</div></div>'
     )
@@ -188,7 +192,7 @@ _HOLDINGS_SAMPLE = """
     <div class="stock-avatar">REL</div>
     <div class="holding-mid">
       <p class="h-symbol">RELIANCE &middot; LONG</p>
-      <p class="h-detail">40 shares &middot; bought at &#8377;1,250.00</p>
+      <div class="detail-chips"><span class="chip qty">Qty 40</span><span class="chip price">Bought at &#8377;1,250.00</span></div>
     </div>
     <div class="holding-right">
       <p class="h-value tabular">&#8377;51,200</p>
@@ -199,7 +203,7 @@ _HOLDINGS_SAMPLE = """
     <div class="stock-avatar">TCS</div>
     <div class="holding-mid">
       <p class="h-symbol">TCS &middot; LONG</p>
-      <p class="h-detail">12 shares &middot; bought at &#8377;3,500.00</p>
+      <div class="detail-chips"><span class="chip qty">Qty 12</span><span class="chip price">Bought at &#8377;3,500.00</span></div>
     </div>
     <div class="holding-right">
       <p class="h-value tabular">&#8377;40,800</p>
@@ -219,7 +223,8 @@ _ACTIVITY_SAMPLE = """
     <div class="activity-badge buy">B</div>
     <div class="activity-main">
       <p class="a-title">Bought RELIANCE</p>
-      <p class="a-sub">Today, 4:12 PM &middot; 40 @ &#8377;1,250</p>
+      <p class="a-sub">Today, 4:12 PM</p>
+      <div class="detail-chips"><span class="chip qty">Qty 40</span><span class="chip price">Bought at &#8377;1,250</span></div>
     </div>
     <div class="activity-pnl profit tabular">+&#8377;2,400<span class="a-pct">&#9650; 4.9%</span></div>
   </div>
@@ -227,7 +232,8 @@ _ACTIVITY_SAMPLE = """
     <div class="activity-badge sell">S</div>
     <div class="activity-main">
       <p class="a-title">Sold INFY</p>
-      <p class="a-sub">Yesterday, 4:07 PM &middot; 25 @ &#8377;1,480</p>
+      <p class="a-sub">Yesterday, 4:07 PM</p>
+      <div class="detail-chips"><span class="chip qty">Qty 25</span><span class="chip price">Sold at &#8377;1,480</span></div>
     </div>
     <div class="activity-pnl loss tabular">-&#8377;875<span class="a-pct">&#9660; 2.4%</span></div>
   </div>
@@ -507,6 +513,10 @@ _PAGE_TEMPLATE = """<!doctype html>
   .holding-mid { flex: 1; min-width: 0; }
   .holding-mid .h-symbol { font-size: 14px; font-weight: 700; }
   .holding-mid .h-detail { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+  .detail-chips { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .chip { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 7px; letter-spacing: 0.01em; white-space: nowrap; }
+  .chip.qty { background: var(--brand-soft); color: var(--brand); }
+  .chip.price { background: var(--gold-soft); color: var(--gold); }
   .holding-right { text-align: right; flex-shrink: 0; }
   .holding-right .h-value { font-size: 14px; font-weight: 700; }
   .holding-right .h-pnl { font-size: 12px; font-weight: 700; margin-top: 2px; display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
