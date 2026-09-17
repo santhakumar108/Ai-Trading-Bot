@@ -184,6 +184,8 @@
   .chip { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 7px; letter-spacing: 0.01em; white-space: nowrap; }
   .chip.qty { background: var(--brand-soft); color: var(--brand); }
   .chip.price { background: var(--gold-soft); color: var(--gold); }
+  .chip.stop { background: var(--loss-soft); color: var(--loss); }
+  .chip.target { background: var(--profit-soft); color: var(--profit); }
   .holding-right { text-align: right; flex-shrink: 0; }
   .holding-right .h-value { font-size: 14px; font-weight: 700; }
   .holding-right .h-pnl { font-size: 12px; font-weight: 700; margin-top: 2px; display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
@@ -249,7 +251,7 @@
         <h1>Overview</h1>
         <div class="subtitle">Good afternoon &mdash; here's how your bot is doing</div>
       </div>
-      <div class="as-of"><span class="live-dot"></span>Updated Thu, 17 Sep &middot; 12:18 PM IST</div>
+      <div class="as-of"><span class="live-dot"></span>Updated Thu, 17 Sep &middot; 3:20 PM IST</div>
     </div>
     <div class="helper-banner">
       <span class="hb-icon">&#128161;</span>
@@ -259,10 +261,10 @@
       <div class="balance-card">
         <div>
           <p class="label">Your account balance</p>
-          <p class="balance tabular">&#8377;10,03,047</p>
+          <p class="balance tabular">&#8377;10,02,150</p>
         </div>
         <div class="change-row">
-          <span class="change-pill tabular">&#8593; +&#8377;3,047 (+0.3%)</span>
+          <span class="change-pill tabular">&#8593; +&#8377;2,150 (+0.2%)</span>
           <span class="change-note">Started with &#8377;10,00,000</span>
         </div>
       </div>
@@ -285,7 +287,7 @@
     </div>
     <div class="chart-card">
       <div class="chart-head">
-        <div><h2>Portfolio Value</h2><p class="chart-value tabular">&#8377;10,03,047</p></div>
+        <div><h2>Portfolio Value</h2><p class="chart-value tabular">&#8377;10,02,150</p></div>
         <div class="timeframe-tabs"><span>1W</span><span>1M</span><span class="active">3M</span><span>1Y</span><span>ALL</span></div>
       </div>
       <div class="sample-banner">
@@ -304,7 +306,7 @@
       <p class="chart-caption">Illustrative only &mdash; not a forecast or a promise.</p>
     </div>
     <div class="stat-strip">
-      <div class="stat-tile"><p class="stat-label">Total gain/loss</p><p class="stat-value tabular">+&#8377;3,220</p></div>
+      <div class="stat-tile"><p class="stat-label">Total gain/loss</p><p class="stat-value tabular">+&#8377;2,323</p></div>
       <div class="stat-tile"><p class="stat-label">Stocks you own</p><p class="stat-value tabular">1</p></div>
       <div class="stat-tile"><p class="stat-label">Stocks checked, daily</p><p class="stat-value tabular">1,367</p></div>
       <div class="stat-tile"><p class="stat-label">Trades today</p><p class="stat-value tabular">&mdash;</p></div>
@@ -315,7 +317,7 @@
       <div class="panel">
         <div class="panel-head"><h2>What You Own</h2></div>
         <p class="panel-sub">Stocks your bot has bought and is still holding</p>
-        <div class="panel-body"><div class="empty-card"><strong>1 holding(s) today.</strong></div><div class="real-block"><div class="holding-card is-profit"><div class="stock-avatar">PRS</div><div class="holding-mid"><p class="h-symbol">PRSMJOHNSN &middot; LONG</p><div class="detail-chips"><span class="chip qty">Qty 1547</span><span class="chip price">Bought at &#8377;112</span></div></div><div class="holding-right"><p class="h-value tabular">&#8377;1,76,606</p><p class="h-pnl profit tabular">+&#8377;3,220 (+1.9%)</p></div></div></div></div>
+        <div class="panel-body"><div class="empty-card"><strong>1 holding(s) today.</strong></div><div class="real-block"><div class="holding-card is-profit"><div class="stock-avatar">PRS</div><div class="holding-mid"><p class="h-symbol">PRSMJOHNSN &middot; LONG</p><div class="detail-chips"><span class="chip qty">Qty 1547</span><span class="chip price">Bought at &#8377;112</span></div><div class="detail-chips"><span class="chip stop">&#128721; Sells if below &#8377;107</span><span class="chip target">&#127919; Sells if above &#8377;127</span></div></div><div class="holding-right"><p class="h-value tabular">&#8377;1,75,708</p><p class="h-pnl profit tabular">+&#8377;2,323 (+1.3%)</p></div></div></div></div>
       </div>
       <div class="panel">
         <div class="panel-head"><h2>Recent Activity</h2></div>

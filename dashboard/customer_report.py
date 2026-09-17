@@ -120,6 +120,20 @@ def _period_card_html(label: str, pnl: float, count: int) -> str:
     )
 
 
+def _exit_plan_chips_html(stop_loss: Optional[float], target: Optional[float]) -> str:
+    """The plain-language "when will the bot sell this" chips -- only
+    rendered when both bounds are known (always true for a real position
+    opened by execute_if_approved, which never leaves either as None)."""
+    if stop_loss is None or target is None:
+        return ""
+    return (
+        f'<div class="detail-chips">'
+        f'<span class="chip stop">&#128721; Sells if below {_inr(stop_loss)}</span>'
+        f'<span class="chip target">&#127919; Sells if above {_inr(target)}</span>'
+        f'</div>'
+    )
+
+
 def _holding_card_html(pos: Position, current_price: Optional[float]) -> str:
     price = current_price if current_price is not None else pos.average_price
     market_value = price * pos.quantity
@@ -140,6 +154,7 @@ def _holding_card_html(pos: Position, current_price: Optional[float]) -> str:
         f'<span class="chip qty">Qty {pos.quantity}</span>'
         f'<span class="chip price">Bought at {_inr(pos.average_price)}</span>'
         f'</div>'
+        f'{_exit_plan_chips_html(pos.stop_loss, pos.target)}'
         f'</div>'
         f'<div class="holding-right">'
         f'<p class="h-value tabular">{_inr(market_value)}</p>'
@@ -193,6 +208,7 @@ _HOLDINGS_SAMPLE = """
     <div class="holding-mid">
       <p class="h-symbol">RELIANCE &middot; LONG</p>
       <div class="detail-chips"><span class="chip qty">Qty 40</span><span class="chip price">Bought at &#8377;1,250.00</span></div>
+      <div class="detail-chips"><span class="chip stop">&#128721; Sells if below &#8377;1,190.00</span><span class="chip target">&#127919; Sells if above &#8377;1,415.00</span></div>
     </div>
     <div class="holding-right">
       <p class="h-value tabular">&#8377;51,200</p>
@@ -517,6 +533,8 @@ _PAGE_TEMPLATE = """<!doctype html>
   .chip { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 7px; letter-spacing: 0.01em; white-space: nowrap; }
   .chip.qty { background: var(--brand-soft); color: var(--brand); }
   .chip.price { background: var(--gold-soft); color: var(--gold); }
+  .chip.stop { background: var(--loss-soft); color: var(--loss); }
+  .chip.target { background: var(--profit-soft); color: var(--profit); }
   .holding-right { text-align: right; flex-shrink: 0; }
   .holding-right .h-value { font-size: 14px; font-weight: 700; }
   .holding-right .h-pnl { font-size: 12px; font-weight: 700; margin-top: 2px; display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
