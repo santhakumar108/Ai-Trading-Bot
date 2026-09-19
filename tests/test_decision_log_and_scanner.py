@@ -5,6 +5,7 @@ tracking for paper trading), and section 19 (configurable NSE-universe
 scanner with batching/caching/rate-limit handling).
 """
 
+import csv
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -311,11 +312,17 @@ def test_scanner_batches_and_calls_scan_symbol_once_per_symbol(uptrend_daily, tm
     config.universe.symbols = ["A.NS", "B.NS", "C.NS", "D.NS", "E.NS"]
     engine = make_offline_engine(uptrend_daily, tmp_path, config=config)
 
+    import threading
     call_count = {"n": 0}
+    count_lock = threading.Lock()
     original = engine.scan_symbol
 
     def counting_scan(symbol, sector=None):
-        call_count["n"] += 1
+        # Symbols within a batch now scan concurrently (thread pool) --
+        # the increment needs its own lock, since "n += 1" is a
+        # non-atomic read-modify-write and could otherwise lose a count.
+        with count_lock:
+            call_count["n"] += 1
         return original(symbol, sector=sector)
 
     engine.scan_symbol = counting_scan
@@ -323,6 +330,30 @@ def test_scanner_batches_and_calls_scan_symbol_once_per_symbol(uptrend_daily, tm
     cycle = scanner.scan()
     assert call_count["n"] == 5
     assert cycle.symbols_scanned == 5
+
+
+def test_concurrent_batch_scan_loses_no_decision_log_entries(uptrend_daily, tmp_path):
+    """Regression guard for the within-batch ThreadPoolExecutor change:
+    every symbol's decision must still land in the log exactly once, both
+    in memory and in the CSV file, even when several symbols in a batch
+    are scanned concurrently."""
+    config = Config()
+    config.decision_thresholds.min_history_bars = 60
+    n = 24
+    config.universe.symbols = [f"SYM{i}.NS" for i in range(n)]
+    engine = make_offline_engine(uptrend_daily, tmp_path, config=config)
+    scanner = UniverseScanner(engine, batch_size=8, delay_between_batches_seconds=0.0)
+
+    cycle = scanner.scan()
+    assert cycle.symbols_scanned + cycle.symbols_skipped == n
+
+    entries = engine.decision_log.all_entries()
+    assert len(entries) == n
+    assert len(set(e.symbol for e in entries)) == n  # no duplicates, no losses
+
+    with open(engine.decision_log.path, newline="") as f:
+        rows = list(csv.reader(f))
+    assert len(rows) == n + 1  # header + one row per symbol, no interleaved/corrupted rows
 
 
 def test_scanner_isolates_a_single_symbol_failure(uptrend_daily, tmp_path):

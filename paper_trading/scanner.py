@@ -10,7 +10,12 @@ does not do on its own:
 
   * BATCHING + a pause between batches ("don't scan thousands blindly if
     API limits unreliable" -- a free/shared market-data API can rate-limit
-    or degrade under a burst of back-to-back requests).
+    or degrade under a burst of back-to-back requests). Symbols WITHIN one
+    batch are fetched concurrently (thread pool, since scan_symbol is
+    network-I/O-bound, not CPU-bound) -- the pacing that protects against
+    rate-limiting is the pause BETWEEN batches, not serializing every
+    single request, so this does not change how many requests land in a
+    given time window, only how quickly one batch's requests complete.
   * A short-TTL result CACHE so a dashboard or CLI polling loop that
     re-scans the same universe within a few tens of seconds doesn't
     refetch/rescoring identical data for no reason.
@@ -24,6 +29,7 @@ from __future__ import annotations
 
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
@@ -109,14 +115,22 @@ class UniverseScanner:
         results: List[ScanResult] = []
         skipped = 0
 
+        def _scan_one(symbol: str) -> Optional[ScanResult]:
+            try:
+                return self.engine.scan_symbol(symbol, sector=(sector_map or {}).get(symbol))
+            except Exception as exc:
+                logger.warning("UniverseScanner: scan failed for %s (skipping, not aborting the cycle): %s", symbol, exc)
+                return None
+
         for batch_start in range(0, len(symbols), self.batch_size):
             batch = symbols[batch_start: batch_start + self.batch_size]
-            for symbol in batch:
-                try:
-                    result = self.engine.scan_symbol(symbol, sector=(sector_map or {}).get(symbol))
-                except Exception as exc:
-                    logger.warning("UniverseScanner: scan failed for %s (skipping, not aborting the cycle): %s", symbol, exc)
-                    result = None
+            with ThreadPoolExecutor(max_workers=len(batch)) as executor:
+                # .map preserves input order in its output, even though the
+                # underlying fetches complete out of order -- results stay
+                # in the same order a sequential scan would have produced.
+                batch_results = list(executor.map(_scan_one, batch))
+
+            for result in batch_results:
                 if result is None:
                     skipped += 1
                 else:

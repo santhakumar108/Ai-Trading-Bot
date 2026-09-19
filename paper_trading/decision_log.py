@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import csv
 import os
+import threading
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
@@ -79,15 +80,21 @@ class DecisionLog:
     def __init__(self, path: str = DEFAULT_DECISION_LOG_PATH):
         self.path = path
         self._entries: List[DecisionLogEntry] = []
+        # UniverseScanner now scans a batch's symbols concurrently (thread
+        # pool) -- record() is the one piece of shared mutable state
+        # scan_symbol() touches per-call, so it needs a lock to keep
+        # concurrent appends/writes from interleaving or losing a row.
+        self._lock = threading.Lock()
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
         if not os.path.exists(path):
             with open(path, "w", newline="") as f:
                 csv.writer(f).writerow(FIELDNAMES)
 
     def record(self, entry: DecisionLogEntry) -> None:
-        self._entries.append(entry)
-        with open(self.path, "a", newline="") as f:
-            csv.writer(f).writerow([getattr(entry, k) for k in FIELDNAMES])
+        with self._lock:
+            self._entries.append(entry)
+            with open(self.path, "a", newline="") as f:
+                csv.writer(f).writerow([getattr(entry, k) for k in FIELDNAMES])
 
     def all_entries(self) -> List[DecisionLogEntry]:
         return list(self._entries)
