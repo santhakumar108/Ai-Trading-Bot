@@ -654,9 +654,61 @@ _PAGE_TEMPLATE = """<!doctype html>
     .exit-plan { grid-template-columns: 1fr; }
     .holding-grid { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
   }
+
+  /* Desktop: left sidebar nav replaces the mobile bottom tab bar */
+  .sidebar { display: none; }
+  @media (min-width: 960px) {
+    .app-header, .tabbar { display: none; }
+    .sidebar {
+      display: flex; flex-direction: column; gap: 4px; position: fixed; top: 0; left: 0; bottom: 0; width: 232px;
+      background: var(--surface); border-right: 1px solid var(--border); padding: 22px 14px;
+    }
+    .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 22px; }
+    .sidebar .brand .mark { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--brand), #0D8F68);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sidebar .brand .mark svg { width: 19px; height: 19px; }
+    .sidebar .brand .name { font-size: 13.5px; font-weight: 800; margin: 0; }
+    .sidebar .brand .name .accent { color: var(--brand); }
+    .sidebar .brand .tagline { font-size: 9.5px; color: var(--ink-faint); margin: 1px 0 0; }
+    .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar nav a { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 700; color: var(--ink-faint); text-decoration: none; }
+    .sidebar nav a .tab-icon { font-size: 16px; }
+    .sidebar nav a.active { background: var(--brand-soft); color: var(--brand); }
+    .sidebar .sidebar-mode { margin-top: auto; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); }
+    .sidebar .sm-label { font-size: 9.5px; color: var(--ink-faint); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+    .sidebar .sm-value { font-size: 12px; font-weight: 700; color: var(--gold); margin-top: 5px; display: flex; align-items: center; gap: 6px; }
+    .sidebar .sm-value .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .wrap { margin-left: 232px; max-width: 1000px; padding: 30px 36px 40px; }
+  }
+  @media (min-width: 1180px) {
+    .split-desktop-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: start; }
+    .split-desktop-row > section.block { margin-bottom: 0; }
+  }
 </style>
 </head>
 <body>
+<aside class="sidebar">
+  <div class="brand">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div>
+      <p class="name">Santha's <span class="accent">Trading Bot</span></p>
+      <p class="tagline">Automated &bull; Smart &bull; Stress Free</p>
+    </div>
+  </div>
+  <nav>
+    <a href="#top" class="active"><span class="tab-icon">&#127968;</span>Home</a>
+    <a href="#results"><span class="tab-icon">&#128200;</span>Results</a>
+    <a href="#stocks"><span class="tab-icon">&#128188;</span>Stocks</a>
+    <a href="#bot-status"><span class="tab-icon">&#129302;</span>Bot</a>
+    <a href="#trust"><span class="tab-icon">&#9881;&#65039;</span>Settings</a>
+  </nav>
+  <div class="sidebar-mode">
+    <div class="sm-label">Account Mode</div>
+    <div class="sm-value"><span class="dot"></span>Practice &mdash; no real money</div>
+  </div>
+</aside>
 <div class="wrap" id="top">
   <header class="app-header">
     <div class="brand">
@@ -731,6 +783,7 @@ _PAGE_TEMPLATE = """<!doctype html>
     </div>
   </section>
 
+  <div class="split-desktop-row">
   <section class="block" id="stocks">
     <div class="section-head">
       <h2>&#128230; Your Stocks</h2>
@@ -749,6 +802,7 @@ _PAGE_TEMPLATE = """<!doctype html>
     </div>
     @@ACTIVITY_SECTION@@
   </section>
+  </div>
 
   <section class="block" id="results">
     <div class="section-head"><h2>&#128202; Your Results</h2></div>
