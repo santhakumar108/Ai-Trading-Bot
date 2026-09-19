@@ -117,3 +117,50 @@ def test_real_holding_and_trade_render_as_real_not_sample(tmp_path):
     assert reliance_index > real_section_start
     # ...and the holdings SAMPLE fallback must be absent now that real data exists.
     assert "The exact format each holding will use" not in html
+    # Real company name (from config/nse_company_names.py, NSE's own data) shown, not just the ticker.
+    assert "Reliance Industries Limited" in html
+
+
+def test_company_name_falls_back_to_ticker_for_unknown_symbol():
+    from dashboard.customer_report import _company_name
+    assert _company_name("RELIANCE.NS") == "Reliance Industries Limited"
+    assert _company_name("TOTALLYFAKESYMBOL.NS") == "TOTALLYFAKESYMBOL"
+
+
+def test_results_section_uses_overall_since_start_label(tmp_path):
+    config = Config()
+    md = make_fixed_quote_md(100.0)
+    engine = PaperTradingEngine(config=config, market_data=md, journal=TradeJournal(path=str(tmp_path / "journal.csv")))
+    html = render_customer_html(engine, config)
+    assert "Overall (Since Start)" in html
+    assert "This Month" not in html  # dropped from the redesigned 3-card Results row (Today / This Week / Overall)
+
+
+def test_results_cards_each_show_their_own_correct_sub_text(tmp_path):
+    """Regression guard: 'This Week' must never show an active-position
+    count (that's only correct for the 'Overall' card) -- a fragile
+    string-replace once made every zero-count card say the same thing."""
+    import re
+
+    config = Config()
+    md = make_fixed_quote_md(120.0)
+    engine = PaperTradingEngine(config=config, market_data=md, journal=TradeJournal(path=str(tmp_path / "journal.csv")))
+    open_entry = JournalEntry(
+        trade_id="o1", symbol="RELIANCE.NS", side="BUY",
+        entry_time=datetime.now(timezone.utc) - timedelta(hours=5),
+        entry_price=100.0, stop_loss=90.0, target=150.0, quantity=10, fees=1.0, sector=None,
+    )
+    engine.journal.record_open(open_entry)
+    from broker.broker_interface import Position
+    engine.broker._positions["RELIANCE.NS"] = Position(
+        symbol="RELIANCE.NS", side="LONG", quantity=10, average_price=100.0,
+        stop_loss=90.0, target=150.0, sector=None,
+    )
+
+    html = render_customer_html(engine, config)
+    cards = dict(re.findall(
+        r'<p class="result-label">(.*?)</p>.*?<p class="result-sub">(.*?)</p>', html, re.S,
+    ))
+    assert cards["Today"] == "No new trades"
+    assert cards["This Week"] == "No closed trades"
+    assert cards["Overall (Since Start)"] == "1 active position"

@@ -3,40 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Trading Account</title>
+<title>Santha's Trading Bot</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
   :root {
-    --bg: #F7F5EF; --surface: #FFFFFF; --surface-2: #F1EFE6;
-    --sidebar: #17251F; --sidebar-ink: #C7D4CC; --sidebar-ink-soft: #7E9089;
-    --ink: #1E2A28; --ink-soft: #5C6D69; --ink-faint: #93A099;
-    --border: #E2E4DC; --brand: #1F6F5C; --brand-soft: #DCEAE4;
-    --gold: #B9903A; --gold-soft: #F3E9D3;
-    --profit: #2E8B57; --profit-soft: #E1F0E7;
-    --loss: #C1443D; --loss-soft: #F8E4E2;
-    --shadow: 0 1px 2px rgba(30,42,40,0.04), 0 6px 20px -8px rgba(30,42,40,0.10);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0E1613; --surface: #152420; --surface-2: #1B2C27;
-      --sidebar: #0A100D; --sidebar-ink: #D6E0DA; --sidebar-ink-soft: #66786F;
-      --ink: #EDEFE9; --ink-soft: #93A39D; --ink-faint: #5E716B;
-      --border: #213631; --brand: #3FA98A; --brand-soft: #1B3A31;
-      --gold: #D9B45E; --gold-soft: #332A16;
-      --profit: #4CAF7D; --profit-soft: #17301F;
-      --loss: #E17169; --loss-soft: #34201E;
-      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 24px -8px rgba(0,0,0,0.5);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0E1613; --surface: #152420; --surface-2: #1B2C27;
-    --sidebar: #0A100D; --sidebar-ink: #D6E0DA; --sidebar-ink-soft: #66786F;
-    --ink: #EDEFE9; --ink-soft: #93A39D; --ink-faint: #5E716B;
-    --border: #213631; --brand: #3FA98A; --brand-soft: #1B3A31;
-    --gold: #D9B45E; --gold-soft: #332A16;
-    --profit: #4CAF7D; --profit-soft: #17301F;
-    --loss: #E17169; --loss-soft: #34201E;
-    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 24px -8px rgba(0,0,0,0.5);
+    --bg: #0A1512; --surface: #10201B; --surface-2: #152A23;
+    --ink: #F1F5F3; --ink-soft: #9DB3AB; --ink-faint: #5F7A72;
+    --border: #1E3830; --brand: #10B981; --brand-soft: #123B2E;
+    --gold: #E3B341; --gold-soft: #332912;
+    --profit: #34D399; --profit-soft: #0F2E22;
+    --loss: #F87171; --loss-soft: #341616;
+    --neutral: #8FA39B; --neutral-soft: #1B2A25;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -8px rgba(0,0,0,0.5);
   }
   * { box-sizing: border-box; }
   body {
@@ -44,293 +22,318 @@
     font-family: "Manrope", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
   }
   .tabular { font-variant-numeric: tabular-nums; }
-  a { color: inherit; text-decoration: none; }
-  .app { display: flex; min-height: 100vh; }
-  .sidebar {
-    width: 232px; flex-shrink: 0; background: var(--sidebar); color: var(--sidebar-ink);
-    padding: 22px 16px; display: flex; flex-direction: column; gap: 26px;
+  a { color: inherit; }
+  .wrap { max-width: 620px; margin: 0 auto; padding: 16px 16px 90px; }
+
+  /* Header */
+  .app-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 4px 16px; }
+  .app-header .brand { display: flex; align-items: center; gap: 10px; }
+  .app-header .mark {
+    width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--brand), #0D8F68);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
-  .sidebar .brand .mark {
-    width: 34px; height: 34px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--brand), var(--gold));
-    display: flex; align-items: center; justify-content: center; color: #fff;
+  .app-header .mark svg { width: 22px; height: 22px; }
+  .app-header .name { font-size: 16.5px; font-weight: 800; margin: 0; }
+  .app-header .name .accent { color: var(--brand); }
+  .app-header .tagline { font-size: 11px; color: var(--ink-faint); margin: 1px 0 0; }
+  .app-header .actions { display: flex; align-items: center; gap: 10px; }
+  .bell { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 15px; position: relative; }
+  .bell .dot { position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--loss); }
+  .avatar-chip { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; color: var(--brand); }
+
+  /* Status hero */
+  .status-hero {
+    background: linear-gradient(160deg, var(--brand-soft) 0%, var(--surface) 65%);
+    border: 1px solid var(--border); border-radius: 20px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px;
+    display: flex; gap: 14px; align-items: flex-start;
   }
-  .sidebar .brand .mark svg { width: 18px; height: 18px; }
-  .sidebar .brand .name { font-weight: 700; font-size: 14.5px; color: #fff; }
-  .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
-  .sidebar nav a {
-    display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px;
-    font-size: 13.5px; font-weight: 600; color: var(--sidebar-ink-soft);
-  }
-  .sidebar nav a .ic { width: 18px; text-align: center; font-size: 14px; }
-  .sidebar nav a.active { background: rgba(255,255,255,0.07); color: #fff; }
-  .sidebar .sidebar-mode { margin-top: auto; padding: 13px 14px; border-radius: 12px; background: rgba(255,255,255,0.05); }
-  .sidebar .sidebar-mode .sm-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sidebar-ink-soft); margin-bottom: 5px; }
-  .sidebar .sidebar-mode .sm-value { font-size: 13px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 6px; }
-  .sidebar .sidebar-mode .sm-value .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .main { flex: 1; min-width: 0; padding: 26px 34px 60px; max-width: 1180px; }
-  .page-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
-  .page-header h1 { font-size: 21px; font-weight: 800; margin: 0; }
-  .page-header .subtitle { font-size: 13px; color: var(--ink-faint); margin-top: 3px; }
-  .as-of { font-size: 12px; color: var(--ink-faint); font-weight: 600; display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
-  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--profit); box-shadow: 0 0 0 0 rgba(46,139,87,0.5); animation: livepulse 2s infinite; }
-  @keyframes livepulse {
-    0% { box-shadow: 0 0 0 0 rgba(46,139,87,0.45); }
-    70% { box-shadow: 0 0 0 6px rgba(46,139,87,0); }
-    100% { box-shadow: 0 0 0 0 rgba(46,139,87,0); }
-  }
-  .helper-banner {
-    display: flex; align-items: flex-start; gap: 12px; background: var(--brand-soft); border: 1px solid var(--border);
-    border-radius: 16px; padding: 14px 18px; margin-bottom: 16px;
-  }
-  .helper-banner .hb-icon { font-size: 18px; flex-shrink: 0; }
-  .helper-banner p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink); }
-  .helper-banner strong { color: var(--brand); }
-  .legend-row { display: flex; gap: 18px; align-items: center; margin: -6px 0 16px; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-soft); font-weight: 600; }
-  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .legend-dot.profit { background: var(--profit); }
-  .legend-dot.loss { background: var(--loss); }
-  .legend-dot.neutral { background: var(--ink-faint); }
-  .panel-sub { font-size: 11.5px; color: var(--ink-faint); margin: -12px 20px 12px; }
-  .hero-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .balance-card {
-    background: linear-gradient(150deg, var(--brand) 0%, var(--brand) 55%, var(--gold) 230%);
-    border-radius: 20px; padding: 26px 28px; color: #FCFBF6; box-shadow: var(--shadow);
-    display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .balance-card .label { font-size: 13px; opacity: 0.85; font-weight: 600; margin: 0 0 8px; }
-  .balance-card .balance { font-size: 42px; font-weight: 800; margin: 0; letter-spacing: -0.015em; }
-  .balance-card .change-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
-  .balance-card .change-pill {
-    font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 999px;
-    background: rgba(255,255,255,0.18); display: inline-flex; align-items: center; gap: 5px;
-  }
-  .balance-card .change-note { font-size: 12.5px; opacity: 0.8; }
-  .status-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-    padding: 20px 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; justify-content: center;
-  }
-  .status-card .status-icon {
-    width: 36px; height: 36px; border-radius: 10px; background: var(--gold-soft); color: var(--gold);
-    display: flex; align-items: center; justify-content: center; font-size: 17px;
-  }
-  .status-card .status-title { font-size: 14px; font-weight: 700; margin: 8px 0 4px; }
-  .status-card .status-body { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; margin: 0; }
-  .chart-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-    padding: 22px 24px 18px; box-shadow: var(--shadow); margin-bottom: 16px;
-  }
-  .chart-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
-  .chart-head h2 { font-size: 14px; font-weight: 700; margin: 0; }
-  .chart-head .chart-value { font-size: 24px; font-weight: 800; margin: 4px 0 0; }
-  .timeframe-tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 10px; }
-  .timeframe-tabs span { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px; color: var(--ink-faint); }
-  .timeframe-tabs span.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
-  .chart-svg-wrap { margin-top: 10px; }
-  .chart-caption { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
-  .section-title { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .period-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-  .period-card {
-    background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--border);
-    border-radius: 14px; padding: 16px 16px; box-shadow: var(--shadow);
-  }
-  .period-card.profit { border-top-color: var(--profit); }
-  .period-card.loss { border-top-color: var(--loss); }
-  .period-card.neutral { border-top-color: var(--ink-faint); }
-  .period-label { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.03em; }
-  .period-value { font-size: 22px; font-weight: 800; margin: 0; }
-  .period-value.profit { color: var(--profit); }
-  .period-value.loss { color: var(--loss); }
-  .period-value.neutral { color: var(--ink-faint); }
-  .period-sub { font-size: 11.5px; color: var(--ink-faint); margin: 4px 0 0; }
-  .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 22px; }
-  .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 16px; box-shadow: var(--shadow); }
-  .stat-tile .stat-label { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 6px; font-weight: 600; }
-  .stat-tile .stat-value { font-size: 19px; font-weight: 800; margin: 0; }
-  .split-row { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; align-items: start; }
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
-  .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; }
-  .panel-head h2 { font-size: 14.5px; font-weight: 700; margin: 0; }
-  .panel-body { padding: 0 20px 20px; }
-  .empty-card {
-    background: var(--surface-2); border: 1px dashed var(--border); border-radius: 14px;
-    padding: 18px; text-align: center; color: var(--ink-soft); font-size: 13px; line-height: 1.6; margin-bottom: 14px;
-  }
+  .bot-avatar { width: 64px; height: 64px; border-radius: 18px; background: #0D1F1A; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .bot-avatar svg { width: 42px; height: 42px; }
+  .status-hero .mid { flex: 1; min-width: 0; }
+  .running-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(52,211,153,0.14); color: var(--profit);
+    font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.03em; }
+  .running-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: livepulse 2s infinite; }
+  @keyframes livepulse { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,0.5); } 70% { box-shadow: 0 0 0 6px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
+  .status-hero .headline { font-size: 15px; font-weight: 700; margin: 8px 0 4px; }
+  .status-hero .subline { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 6px; }
+  .practice-badge { background: var(--gold-soft); border: 1px solid rgba(227,179,65,0.3); border-radius: 14px; padding: 10px 12px;
+    text-align: center; flex-shrink: 0; width: 116px; }
+  .practice-badge .pb-title { font-size: 10px; font-weight: 800; color: var(--gold); letter-spacing: 0.04em; }
+  .practice-badge .pb-body { font-size: 9.5px; color: var(--ink-soft); margin: 4px 0 6px; line-height: 1.4; }
+  .practice-badge a { font-size: 10.5px; font-weight: 700; color: var(--brand); text-decoration: none; }
+
+  /* Portfolio card */
+  .portfolio-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px;
+    box-shadow: var(--shadow); margin-bottom: 14px; }
+  .pf-label { font-size: 12.5px; color: var(--ink-soft); font-weight: 600; margin: 0; display: flex; align-items: center; gap: 5px; }
+  .pf-balance { font-size: 34px; font-weight: 800; margin: 4px 0 0; letter-spacing: -0.01em; }
+  .pf-change-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 14px; flex-wrap: wrap; }
+  .pf-change-pill { font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .pf-change-pill.profit { background: var(--profit-soft); color: var(--profit); }
+  .pf-change-pill.loss { background: var(--loss-soft); color: var(--loss); }
+  .pf-change-pill.neutral { background: var(--neutral-soft); color: var(--neutral); }
+  .pf-started { font-size: 11.5px; color: var(--ink-faint); }
+  .pf-body { display: flex; gap: 16px; align-items: stretch; }
+  .pf-chart-wrap { flex: 1.5; min-width: 0; position: relative; }
+  .pf-chart-badge { position: absolute; top: -6px; right: 4px; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 3px 8px; font-size: 11px; font-weight: 700; }
+  .pf-chart-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--ink-faint); margin-top: 2px; }
+  .pf-stats { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+  .pf-stat { display: flex; align-items: center; gap: 8px; }
+  .pf-stat-icon { width: 30px; height: 30px; border-radius: 9px; background: var(--surface-2); display: flex; align-items: center;
+    justify-content: center; font-size: 13px; flex-shrink: 0; }
+  .pf-stat-label { font-size: 10.5px; color: var(--ink-faint); margin: 0; }
+  .pf-stat-value { font-size: 13.5px; font-weight: 700; margin: 1px 0 0; }
+
+  /* Trade status card */
+  .trade-status-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 16px 18px;
+    box-shadow: var(--shadow); margin-bottom: 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .ts-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--brand-soft); color: var(--brand);
+    display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+  .ts-mid { flex: 1; min-width: 180px; }
+  .ts-title { font-size: 14.5px; font-weight: 700; margin: 0 0 3px; }
+  .ts-body { font-size: 12px; color: var(--ink-soft); margin: 0; line-height: 1.5; }
+  .ts-next { text-align: right; flex-shrink: 0; }
+  .ts-next-label { font-size: 10px; color: var(--ink-faint); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .ts-next-value { font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+
+  /* Section header */
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 12px; }
+  .section-head h2 { font-size: 15.5px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px; }
+  .section-head .count-badge { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px;
+    padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--ink-soft); }
+  .section-head .view-all { font-size: 12px; font-weight: 700; color: var(--brand); text-decoration: none; }
+  section.block { margin-bottom: 22px; }
+
+  /* Empty/sample */
+  .empty-card { background: var(--surface-2); border: 1px dashed var(--border); border-radius: 14px; padding: 18px;
+    text-align: center; color: var(--ink-soft); font-size: 12.5px; line-height: 1.6; margin-bottom: 12px; }
   .empty-card strong { color: var(--ink); }
   .sample-banner { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .sample-tag {
-    font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
-    color: var(--gold); background: var(--gold-soft); padding: 4px 9px; border-radius: 7px; flex-shrink: 0;
-  }
-  .sample-note { font-size: 11.5px; color: var(--ink-faint); }
-  .sample-block { opacity: 0.94; }
-  .real-block { }
-  .holding-card {
-    background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border);
-    border-radius: 12px; padding: 13px 15px; margin-bottom: 9px; display: flex; align-items: center; gap: 12px;
-  }
-  .holding-card.is-profit { border-left-color: var(--profit); }
-  .holding-card.is-loss { border-left-color: var(--loss); }
-  .stock-avatar {
-    width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 800; letter-spacing: -0.01em; background: var(--brand-soft); color: var(--brand);
-  }
-  .holding-mid { flex: 1; min-width: 0; }
-  .holding-mid .h-symbol { font-size: 14px; font-weight: 700; }
-  .holding-mid .h-detail { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
-  .detail-chips { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-  .chip { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 7px; letter-spacing: 0.01em; white-space: nowrap; }
-  .chip.qty { background: var(--brand-soft); color: var(--brand); }
-  .chip.price { background: var(--gold-soft); color: var(--gold); }
-  .chip.stop { background: var(--loss-soft); color: var(--loss); }
-  .chip.target { background: var(--profit-soft); color: var(--profit); }
-  .holding-right { text-align: right; flex-shrink: 0; }
-  .holding-right .h-value { font-size: 14px; font-weight: 700; }
-  .holding-right .h-pnl { font-size: 12px; font-weight: 700; margin-top: 2px; display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
-  .holding-right .h-pnl.profit { color: var(--profit); }
-  .holding-right .h-pnl.loss { color: var(--loss); }
-  .activity-row {
-    display: flex; align-items: center; gap: 12px; padding: 12px 0;
-    border-bottom: 1px solid var(--border); border-left: 3px solid transparent; padding-left: 10px;
-  }
-  .activity-row:last-child { border-bottom: none; }
-  .activity-row.is-profit { border-left-color: var(--profit); }
-  .activity-row.is-loss { border-left-color: var(--loss); }
-  .activity-badge {
-    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 800;
-  }
+  .sample-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold);
+    background: var(--gold-soft); padding: 4px 9px; border-radius: 7px; flex-shrink: 0; }
+  .sample-note { font-size: 11px; color: var(--ink-faint); }
+  .sample-block { opacity: 0.92; }
+
+  /* Holdings */
+  .holding-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 16px;
+    box-shadow: var(--shadow); margin-bottom: 12px; }
+  .holding-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .stock-avatar { width: 42px; height: 42px; border-radius: 12px; background: var(--brand-soft); color: var(--brand);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+  .holding-name { flex: 1; min-width: 0; }
+  .h-symbol { font-size: 14.5px; font-weight: 800; margin: 0; }
+  .h-company { font-size: 11px; color: var(--ink-faint); margin: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .holding-tag { background: var(--profit-soft); color: var(--profit); font-size: 10.5px; font-weight: 700; padding: 4px 10px;
+    border-radius: 999px; flex-shrink: 0; }
+  .holding-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 12px; background: var(--surface-2);
+    border-radius: 12px; margin-bottom: 12px; }
+  .hg-label { font-size: 10px; color: var(--ink-faint); margin: 0 0 3px; }
+  .hg-value { font-size: 13px; font-weight: 700; margin: 0; }
+  .hg-value.profit { color: var(--profit); }
+  .hg-value.loss { color: var(--loss); }
+  .why-holding { display: flex; gap: 10px; background: var(--brand-soft); border-radius: 12px; padding: 11px 13px; margin-bottom: 12px; }
+  .why-icon { font-size: 16px; flex-shrink: 0; }
+  .why-title { font-size: 12px; font-weight: 700; color: var(--brand); margin: 0 0 2px; }
+  .why-body { font-size: 11.5px; color: var(--ink-soft); margin: 0; line-height: 1.5; }
+  .exit-plan { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .exit-card { display: flex; gap: 9px; padding: 11px; border-radius: 12px; border: 1px solid var(--border); }
+  .exit-card.stop { background: rgba(248,113,113,0.06); }
+  .exit-card.target { background: rgba(52,211,153,0.06); }
+  .exit-icon { font-size: 15px; flex-shrink: 0; }
+  .exit-label { font-size: 10.5px; color: var(--ink-faint); margin: 0; }
+  .exit-value { font-size: 13.5px; font-weight: 800; margin: 2px 0 4px; }
+  .exit-card.stop .exit-value { color: var(--loss); }
+  .exit-card.target .exit-value { color: var(--profit); }
+  .exit-caption { font-size: 10px; color: var(--ink-faint); margin: 0; line-height: 1.4; }
+
+  /* Activity */
+  .activity-row { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; margin-bottom: 9px; }
+  .date-badge { width: 40px; text-align: center; flex-shrink: 0; }
+  .date-badge .dn { display: block; font-size: 15px; font-weight: 800; }
+  .date-badge .dm { display: block; font-size: 9px; color: var(--ink-faint); font-weight: 700; letter-spacing: 0.03em; }
+  .activity-badge { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 800; }
   .activity-badge.buy { background: var(--brand-soft); color: var(--brand); }
   .activity-badge.sell { background: var(--gold-soft); color: var(--gold); }
   .activity-main { flex: 1; min-width: 0; }
-  .activity-main .a-title { font-size: 13px; font-weight: 600; }
-  .activity-main .a-sub { font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
-  .activity-pnl { font-size: 13px; font-weight: 700; flex-shrink: 0; text-align: right; }
-  .activity-pnl .a-pct { display: flex; align-items: center; gap: 3px; justify-content: flex-end; font-size: 10.5px; font-weight: 600; opacity: 0.8; margin-top: 1px; }
-  .activity-pnl .a-pending { color: var(--ink-faint); font-weight: 600; font-size: 12px; }
-  .activity-row.is-profit .activity-pnl { color: var(--profit); }
-  .activity-row.is-loss .activity-pnl { color: var(--loss); }
-  .trust-footer {
-    margin-top: 8px; padding: 18px 20px; background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 16px; font-size: 12.5px; line-height: 1.7; color: var(--ink-soft);
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  .a-title { font-size: 13px; font-weight: 700; margin: 0; }
+  .a-sub { font-size: 11px; color: var(--ink-faint); margin: 1px 0 0; }
+  .activity-right { text-align: right; flex-shrink: 0; }
+  .a-qty { font-size: 11.5px; font-weight: 700; margin: 0; }
+  .a-price { font-size: 10.5px; color: var(--ink-faint); margin: 1px 0 4px; }
+  .status-pill { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; display: inline-block; }
+  .status-pill.open { background: var(--neutral-soft); color: var(--neutral); }
+  .status-pill.profit { background: var(--profit-soft); color: var(--profit); }
+  .status-pill.loss { background: var(--loss-soft); color: var(--loss); }
+
+  /* Results */
+  .results-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--border);
+    border-radius: 14px; padding: 13px; box-shadow: var(--shadow); }
+  .result-card.profit { border-top-color: var(--profit); }
+  .result-card.loss { border-top-color: var(--loss); }
+  .result-card.neutral { border-top-color: var(--neutral); }
+  .result-icon { font-size: 14px; margin-bottom: 6px; }
+  .result-label { font-size: 10.5px; color: var(--ink-faint); font-weight: 700; margin: 0 0 5px; }
+  .result-value { font-size: 16.5px; font-weight: 800; margin: 0; }
+  .result-value.profit { color: var(--profit); }
+  .result-value.loss { color: var(--loss); }
+  .result-value.neutral { color: var(--neutral); }
+  .result-sub { font-size: 10px; color: var(--ink-faint); margin: 4px 0 0; }
+
+  /* Learn banner */
+  .learn-banner { background: linear-gradient(120deg, var(--brand-soft), var(--surface)); border: 1px solid var(--border);
+    border-radius: 18px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .learn-icon { font-size: 22px; flex-shrink: 0; }
+  .learn-mid { flex: 1; min-width: 0; }
+  .learn-title { font-size: 13.5px; font-weight: 800; margin: 0 0 3px; }
+  .learn-title .accent { color: var(--brand); }
+  .learn-body { font-size: 11.5px; color: var(--ink-soft); margin: 0; }
+  .learn-link { font-size: 12px; font-weight: 700; color: var(--brand); text-decoration: none; white-space: nowrap; flex-shrink: 0; }
+
+  /* Trust points */
+  .trust-points { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .trust-points .row { display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; }
+  .trust-points .check { color: var(--brand); flex-shrink: 0; font-weight: 800; }
+  .trust-points strong { color: var(--ink); }
+
+  /* Bottom tab bar */
+  .tabbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 10; }
+  .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: var(--ink-faint);
+    font-size: 10px; font-weight: 700; padding: 4px 8px; }
+  .tabbar a.active { color: var(--brand); }
+  .tabbar a .tab-icon { font-size: 17px; }
+
+  @media (min-width: 720px) {
+    .wrap { max-width: 760px; padding-top: 28px; }
+    .holding-grid { grid-template-columns: repeat(4, 1fr); }
   }
-  .trust-footer strong { color: var(--ink); display: block; margin-bottom: 3px; font-size: 12.5px; }
-  .trust-footer .row { display: flex; align-items: flex-start; gap: 8px; }
-  .trust-footer .check { color: var(--brand); flex-shrink: 0; font-weight: 800; }
-  @media (max-width: 920px) {
-    .sidebar { display: none; }
-    .main { padding: 18px 16px 50px; max-width: 560px; margin: 0 auto; }
-    .hero-row, .split-row { grid-template-columns: 1fr; }
-    .period-strip { grid-template-columns: repeat(2, 1fr); }
-    .stat-strip { grid-template-columns: repeat(2, 1fr); }
-    .trust-footer { grid-template-columns: 1fr; }
+  @media (max-width: 480px) {
+    .pf-body { flex-direction: column; }
+    .exit-plan { grid-template-columns: 1fr; }
+    .holding-grid { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
   }
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="name">NSE Bot</div></div>
-    <nav>
-      <a href="#" class="active"><span class="ic">&#9673;</span> Overview</a>
-      <a href="#"><span class="ic">&#9642;</span> Holdings</a>
-      <a href="#"><span class="ic">&#8635;</span> Activity</a>
-      <a href="#performance"><span class="ic">&#9776;</span> Performance</a>
-    </nav>
-    <div class="sidebar-mode">
-      <div class="sm-label">Account Mode</div>
-      <div class="sm-value"><span class="dot"></span> Practice &mdash; no real money</div>
-    </div>
-  </aside>
-  <main class="main">
-    <div class="page-header">
+<div class="wrap">
+  <header class="app-header">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div>
-        <h1>Overview</h1>
-        <div class="subtitle">Good evening &mdash; here's how your bot is doing</div>
-      </div>
-      <div class="as-of"><span class="live-dot"></span>Updated Fri, 18 Sep &middot; 8:34 PM IST</div>
-    </div>
-    <div class="helper-banner">
-      <span class="hb-icon">&#128161;</span>
-      <p><strong>New to this?</strong> Your balance is practice money. When it turns <strong style="color:var(--profit)">green</strong>, your bot made money; <strong style="color:var(--loss)">red</strong> means it lost money. "Closed trade" = a stock your bot bought and later sold.</p>
-    </div>
-    <div class="hero-row">
-      <div class="balance-card">
-        <div>
-          <p class="label">Your account balance</p>
-          <p class="balance tabular">&#8377;10,07,518</p>
-        </div>
-        <div class="change-row">
-          <span class="change-pill tabular">&#8593; +&#8377;7,518 (+0.8%)</span>
-          <span class="change-note">Started with &#8377;10,00,000</span>
-        </div>
-      </div>
-      <div class="status-card">
-        <div class="status-icon">&#128269;</div>
-        <div>
-          <p class="status-title">Watching all 1,367 NSE stocks</p>
-          <p class="status-body">Runs automatically every weekday after market close. It only buys when genuinely confident &mdash; most days, few or none qualify. That's normal, not a malfunction.</p>
-        </div>
+        <p class="name">Santha's <span class="accent">Trading Bot</span></p>
+        <p class="tagline">Automated &bull; Smart &bull; Stress Free</p>
       </div>
     </div>
-    <p class="section-title" id="performance">Performance</p>
-    <div class="legend-row">
-      <span class="legend-item"><span class="legend-dot profit"></span> Made money</span>
-      <span class="legend-item"><span class="legend-dot loss"></span> Lost money</span>
-      <span class="legend-item"><span class="legend-dot neutral"></span> No activity yet</span>
+    <div class="actions">
+      <div class="bell">&#128276;<span class="dot"></span></div>
+      <div class="avatar-chip">SK</div>
     </div>
-    <div class="period-strip">
-      <div class="period-card neutral"><p class="period-label">Today</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card neutral"><p class="period-label">This Week</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card neutral"><p class="period-label">This Month</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div><div class="period-card neutral"><p class="period-label">All Time</p><p class="period-value neutral tabular">+&#8377;0</p><p class="period-sub">0 closed trades</p></div>
+  </header>
+
+  <section class="status-hero">
+    <div class="bot-avatar">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="14" y="18" width="36" height="30" rx="10" fill="#173A30" stroke="#34D399" stroke-width="2"/>
+        <circle cx="25" cy="33" r="4" fill="#34D399"/>
+        <circle cx="39" cy="33" r="4" fill="#34D399"/>
+        <path d="M25 41 Q32 46 39 41" stroke="#34D399" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <line x1="32" y1="18" x2="32" y2="10" stroke="#34D399" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="32" cy="7" r="3" fill="#34D399"/>
+      </svg>
     </div>
-    <div class="chart-card">
-      <div class="chart-head">
-        <div><h2>Portfolio Value</h2><p class="chart-value tabular">&#8377;10,07,518</p></div>
-        <div class="timeframe-tabs"><span>1W</span><span>1M</span><span class="active">3M</span><span>1Y</span><span>ALL</span></div>
+    <div class="mid">
+      <span class="running-pill"><span class="dot"></span>BOT IS RUNNING</span>
+      <p class="headline">Watching the market automatically</p>
+      <p class="subline">&#128202; Checking 2,302 NSE stocks for opportunities</p>
+    </div>
+    <div class="practice-badge">
+      <p class="pb-title">&#129514; PRACTICE MODE</p>
+      <p class="pb-body">No real money is being used.</p>
+      <a href="#trust">Learn more &rarr;</a>
+    </div>
+  </section>
+
+  <section class="portfolio-card">
+    <p class="pf-label">Your Portfolio Value <span title="Cash plus the current value of everything you own">&#8505;&#65039;</span></p>
+    <p class="pf-balance tabular">&#8377;10,07,518</p>
+    <div class="pf-change-row">
+      <span class="pf-change-pill profit tabular">&#9650; +&#8377;7,518 (+0.8%)</span>
+      <span class="pf-started">Started with &#8377;10,00,000</span>
+    </div>
+    <div class="pf-body">
+      <div class="pf-chart-wrap">
+        <span class="pf-chart-badge tabular">&#8377;10,07,518</span>
+        <svg viewBox="0 0 400 180" width="100%" height="140" role="img" aria-label="Portfolio value from start to now"><line x1="0" y1="90" x2="400" y2="90" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line><path d="M10,150.0 L390,40.0 L390,180 L10,180 Z" fill="var(--profit)" opacity="0.10"></path><path d="M10,150.0 L390,40.0" fill="none" stroke="var(--profit)" stroke-width="3" stroke-linecap="round"></path><circle cx="390" cy="40.0" r="6" fill="var(--profit)"></circle></svg>
+        <div class="pf-chart-labels"><span>Start</span><span>Now</span></div>
       </div>
-      <div class="sample-banner">
-        <span class="sample-tag">Sample</span>
-        <span class="sample-note">Not your data &mdash; a daily equity-curve history isn't tracked yet. This shows the shape once it is.</span>
-      </div>
-      <div class="chart-svg-wrap sample-block">
-        <svg viewBox="0 0 1000 220" width="100%" height="220" role="img" aria-label="Sample portfolio value line chart">
-          <line x1="0" y1="40" x2="1000" y2="40" stroke="var(--border)" stroke-width="1"></line>
-          <line x1="0" y1="100" x2="1000" y2="100" stroke="var(--border)" stroke-width="1"></line>
-          <line x1="0" y1="160" x2="1000" y2="160" stroke="var(--border)" stroke-width="1"></line>
-          <path d="M0,168 L120,150 L240,120 L360,158 L480,175 L600,140 L720,95 L840,70 L1000,45 L1000,220 L0,220 Z" fill="var(--profit)" opacity="0.08"></path>
-          <path d="M0,168 L120,150 L240,120 L360,158 L480,175 L600,140 L720,95 L840,70 L1000,45" fill="none" stroke="var(--profit)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      </div>
-      <p class="chart-caption">Illustrative only &mdash; not a forecast or a promise.</p>
-    </div>
-    <div class="stat-strip">
-      <div class="stat-tile"><p class="stat-label">Total gain/loss</p><p class="stat-value tabular">+&#8377;7,691</p></div>
-      <div class="stat-tile"><p class="stat-label">Stocks you own</p><p class="stat-value tabular">1</p></div>
-      <div class="stat-tile"><p class="stat-label">Stocks checked, daily</p><p class="stat-value tabular">1,367</p></div>
-      <div class="stat-tile"><p class="stat-label">Trades today</p><p class="stat-value tabular">&mdash;</p></div>
-      <div class="stat-tile"><p class="stat-label">Trades in total</p><p class="stat-value tabular">1</p></div>
-      <div class="stat-tile"><p class="stat-label">Of those, profitable</p><p class="stat-value tabular">&mdash;</p></div>
-    </div>
-    <div class="split-row">
-      <div class="panel">
-        <div class="panel-head"><h2>What You Own</h2></div>
-        <p class="panel-sub">Stocks your bot has bought and is still holding</p>
-        <div class="panel-body"><div class="empty-card"><strong>1 holding(s) today.</strong></div><div class="real-block"><div class="holding-card is-profit"><div class="stock-avatar">PRS</div><div class="holding-mid"><p class="h-symbol">PRSMJOHNSN &middot; LONG</p><div class="detail-chips"><span class="chip qty">Qty 1547</span><span class="chip price">Bought at &#8377;112</span></div><div class="detail-chips"><span class="chip stop">&#128721; Sells if below &#8377;107</span><span class="chip target">&#127919; Sells if above &#8377;127</span></div></div><div class="holding-right"><p class="h-value tabular">&#8377;1,81,076</p><p class="h-pnl profit tabular">+&#8377;7,691 (+4.4%)</p></div></div></div></div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Recent Activity</h2></div>
-        <p class="panel-sub">Every buy and sell your bot has made, most recent first</p>
-        <div class="panel-body"><div class="empty-card"><strong>0 trade(s) today.</strong></div><div class="real-block"><div class="activity-row "><div class="activity-badge buy">B</div><div class="activity-main"><p class="a-title">Bought PRSMJOHNSN</p><p class="a-sub">3 days ago, 7:03 PM</p><div class="detail-chips"><span class="chip qty">Qty 1547</span><span class="chip price">Bought at &#8377;112</span></div></div><div class="activity-pnl tabular"><span class="a-pending">Still open</span></div></div></div></div>
+      <div class="pf-stats">
+        <div class="pf-stat"><div class="pf-stat-icon">&#128231;</div><div><p class="pf-stat-label">Available Cash</p><p class="pf-stat-value tabular">&#8377;8,26,441</p></div></div>
+        <div class="pf-stat"><div class="pf-stat-icon">&#128338;</div><div><p class="pf-stat-label">Invested Amount</p><p class="pf-stat-value tabular">&#8377;1,81,076</p></div></div>
+        <div class="pf-stat"><div class="pf-stat-icon">&#128200;</div><div><p class="pf-stat-label">Total Profit / Loss</p><p class="pf-stat-value profit tabular">+&#8377;7,691</p></div></div>
       </div>
     </div>
-    <div class="trust-footer">
-      <div class="row"><span class="check">&#10003;</span><span><strong>Practice account</strong>No real money is ever used &mdash; a safe way to see how your bot performs.</span></div>
-      <div class="row"><span class="check">&#10003;</span><span><strong>Never forced</strong>Your bot only trades when confident, and skips days when nothing looks safe.</span></div>
-      <div class="row"><span class="check">&#10003;</span><span><strong>Not advice</strong>Past results, practice or real, never guarantee future ones.</span></div>
+  </section>
+
+  <section class="trade-status-card">
+    <div class="ts-icon">&#128269;</div>
+    <div class="ts-mid">
+      <p class="ts-title">No new trade today</p>
+      <p class="ts-body">Your bot checked the market and didn't find a strong opportunity. That's a good thing!</p>
     </div>
-  </main>
+    <div class="ts-next">
+      <p class="ts-next-label">&#128197; Next Check</p>
+      <p class="ts-next-value">Monday after market close</p>
+    </div>
+  </section>
+
+  <section class="block" id="stocks">
+    <div class="section-head">
+      <h2>&#128230; Your Stocks</h2>
+      <span class="count-badge">1 stock</span>
+    </div>
+    <div class="real-block"><div class="holding-card"><div class="holding-top"><div class="stock-avatar">PRS</div><div class="holding-name"><p class="h-symbol">PRSMJOHNSN</p><p class="h-company">Prism Johnson Limited</p></div><span class="holding-tag">Holding</span></div><div class="holding-grid"><div><p class="hg-label">Shares</p><p class="hg-value tabular">1547</p></div><div><p class="hg-label">Bought at</p><p class="hg-value tabular">&#8377;112</p></div><div><p class="hg-label">Current value</p><p class="hg-value tabular">&#8377;1,81,076</p></div><div><p class="hg-label">Profit / Loss</p><p class="hg-value profit tabular">+&#8377;7,691 (+4.4%)</p></div></div><div class="why-holding"><span class="why-icon">&#128200;</span><div><p class="why-title">Why is the bot holding this?</p><p class="why-body">The bot expects this stock may continue rising.</p></div></div><div class="exit-plan"><div class="exit-card stop"><div class="exit-icon">&#128737;</div><div><p class="exit-label">Safety price</p><p class="exit-value tabular">&#8377;107</p><p class="exit-caption">If the price falls to this level, the bot will sell to limit the loss.</p></div></div><div class="exit-card target"><div class="exit-icon">&#127919;</div><div><p class="exit-label">Profit target</p><p class="exit-value tabular">&#8377;127</p><p class="exit-caption">If the price reaches this level, the bot may sell and take profit.</p></div></div></div></div></div>
+  </section>
+
+  <section class="block" id="activity">
+    <div class="section-head"><h2>&#128337; What Your Bot Did</h2></div>
+    <div class="real-block"><div class="activity-row"><div class="date-badge"><span class="dn">15</span><span class="dm">SEP</span></div><div class="activity-badge buy">B</div><div class="activity-main"><p class="a-title">Bought PRSMJOHNSN</p><p class="a-sub">4 days ago, 7:03 PM</p></div><div class="activity-right"><p class="a-qty tabular">1547 shares</p><p class="a-price tabular">at &#8377;112 each</p><span class="status-pill open">Still holding</span></div></div></div>
+  </section>
+
+  <section class="block" id="results">
+    <div class="section-head"><h2>&#128202; Your Results</h2></div>
+    <div class="results-row"><div class="result-card neutral"><div class="result-icon">&#128197;</div><p class="result-label">Today</p><p class="result-value neutral tabular">+&#8377;0</p><p class="result-sub">No new trades</p></div><div class="result-card neutral"><div class="result-icon">&#128202;</div><p class="result-label">This Week</p><p class="result-value neutral tabular">+&#8377;0</p><p class="result-sub">No closed trades</p></div><div class="result-card neutral"><div class="result-icon">&#127942;</div><p class="result-label">Overall (Since Start)</p><p class="result-value neutral tabular">+&#8377;0</p><p class="result-sub">1 active position</p></div></div>
+  </section>
+
+  <section class="learn-banner">
+    <span class="learn-icon">&#128161;</span>
+    <div class="learn-mid">
+      <p class="learn-title"><span class="accent">New to trading?</span> No problem!</p>
+      <p class="learn-body">Your bot handles everything. You just watch the results.</p>
+    </div>
+    <a class="learn-link" href="#trust">Learn how it works &rarr;</a>
+  </section>
+
+  <div class="trust-points" id="trust">
+    <div class="row"><span class="check">&#10003;</span><span><strong>Practice account.</strong> No real money is ever used &mdash; a safe way to see how your bot performs.</span></div>
+    <div class="row"><span class="check">&#10003;</span><span><strong>Never forced.</strong> Your bot only trades when confident, and skips days when nothing looks safe.</span></div>
+    <div class="row"><span class="check">&#10003;</span><span><strong>Not advice.</strong> Past results, practice or real, never guarantee future ones.</span></div>
+  </div>
+  <p style="text-align:center;font-size:10.5px;color:var(--ink-faint);margin:0 0 8px;">Updated Sat, 19 Sep &middot; 11:59 AM IST</p>
 </div>
+
+<nav class="tabbar">
+  <a href="#" class="active"><span class="tab-icon">&#127968;</span>Home</a>
+  <a href="#results"><span class="tab-icon">&#128200;</span>Results</a>
+  <a href="#stocks"><span class="tab-icon">&#128188;</span>Stocks</a>
+  <a href="#activity"><span class="tab-icon">&#129302;</span>Bot</a>
+  <a href="#trust"><span class="tab-icon">&#9881;&#65039;</span>Settings</a>
+</nav>
 </body>
 </html>
