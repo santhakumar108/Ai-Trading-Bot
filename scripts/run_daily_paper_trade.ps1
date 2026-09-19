@@ -1,6 +1,6 @@
 # Daily paper-trading run, scheduled via Windows Task Scheduler
 # (weekdays, shortly after NSE market close). Scans the FULL NSE
-# EQ-series universe (config\full_universe.yaml, ~1367 symbols --
+# EQ-series universe (config\full_universe.yaml, ~2302 symbols --
 # see config/nse_all_equity.py for the source/staleness caveat), not a
 # small hand-picked list -- a multi-hour run, which is fine since it
 # starts well after market close with nothing else competing for time.

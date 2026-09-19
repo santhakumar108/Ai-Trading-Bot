@@ -8,7 +8,7 @@ name: Daily Paper Trading (Full NSE Universe)
 # already ran today" step makes the catch-up a true no-op on a normal day
 # (when the primary already succeeded), so this costs nothing extra most
 # days and just adds resilience on the days GitHub's scheduler is late.
-# Scans the full ~1367-symbol NSE EQ universe (config/full_universe.yaml)
+# Scans the full ~2302-symbol NSE EQ universe (config/full_universe.yaml)
 # using the SAME PaperBroker-only pipeline as the local run -- this
 # workflow never places a real order and never touches any live broker.
 # A run can take a few hours; that is expected given the universe size.

@@ -1,9 +1,9 @@
 """
 config/nse_all_equity.py: the full NSE EQ-series universe used by the
-weekly full-universe scan (scripts/run_weekly_full_scan.ps1,
-config/full_universe.yaml). A data-integrity regression guard, not
-application logic -- catches an accidental hand-edit introducing a
-duplicate or malformed entry.
+daily full-universe scan (config/full_universe.yaml, the GitHub Actions
+workflow in .github/workflows/daily-paper-trade.yml). A data-integrity
+regression guard, not application logic -- catches an accidental
+hand-edit introducing a duplicate or malformed entry.
 """
 
 from config.nse_all_equity import NSE_ALL_EQUITY, SNAPSHOT_DATE
@@ -25,7 +25,7 @@ def test_nse_all_equity_count_matches_documented_size():
     # Regression guard: catches an accidental partial edit. Update this
     # number (and the module docstring) deliberately if the list is
     # ever intentionally re-sourced/refreshed.
-    assert len(NSE_ALL_EQUITY) == 1367
+    assert len(NSE_ALL_EQUITY) == 2302
 
 
 def test_nse_all_equity_snapshot_date_is_documented():
