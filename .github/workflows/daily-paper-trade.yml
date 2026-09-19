@@ -1,20 +1,20 @@
 name: Daily Paper Trading (Full NSE Universe)
 
-# Primary trigger: weekdays shortly after NSE market close (4:00 PM IST =
-# 10:30 UTC). Catch-up trigger: 6:00 PM IST (12:30 UTC), in case the
-# primary trigger was delayed or skipped -- GitHub's free scheduled
-# workflows are documented as best-effort, not guaranteed to fire at the
-# exact minute (or at all, under high platform load). The "Skip if
-# already ran today" step makes the catch-up a true no-op on a normal day
-# (when the primary already succeeded), so this costs nothing extra most
-# days and just adds resilience on the days GitHub's scheduler is late.
+# Three attempts, weekdays: 4:00 PM IST (10:30 UTC, primary -- shortly
+# after NSE market close), 5:00 PM IST (11:30 UTC), 6:00 PM IST (12:30
+# UTC) -- so results are reliably ready well before a 6:30 PM check, even
+# if GitHub's scheduler delays or drops one or two of the three attempts
+# (documented as best-effort, not guaranteed to fire at the exact minute).
+# The "Skip if already ran today" step makes every attempt after the
+# first successful one a true no-op, so this costs nothing extra on a
+# normal day where the 4 PM run just works.
 # Scans the full ~2302-symbol NSE EQ universe (config/full_universe.yaml)
 # using the SAME PaperBroker-only pipeline as the local run -- this
 # workflow never places a real order and never touches any live broker.
-# A run can take a few hours; that is expected given the universe size.
 on:
   schedule:
     - cron: "30 10 * * 1-5"
+    - cron: "30 11 * * 1-5"
     - cron: "30 12 * * 1-5"
   workflow_dispatch: {}  # allows a manual "Run workflow" click for testing
 

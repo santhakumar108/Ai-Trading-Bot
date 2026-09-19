@@ -65,6 +65,19 @@ def _pct(value: float) -> str:
     return f"{arrow} {abs(value):.1f}%"
 
 
+def _inr_abbrev(amount: float) -> str:
+    """Compact Indian-style abbreviation for tight spaces (e.g. the
+    floating chart badge) -- Crore (&#8377;1.25Cr) / Lakh (&#8377;10.08L)
+    / plain rupees below a lakh."""
+    n = abs(amount)
+    sign = "-" if amount < 0 else ""
+    if n >= 1_00_00_000:
+        return f"{sign}&#8377;{n / 1_00_00_000:.2f}Cr"
+    if n >= 1_00_000:
+        return f"{sign}&#8377;{n / 1_00_000:.2f}L"
+    return _inr(amount)
+
+
 def _short_symbol(symbol: str) -> str:
     return symbol[:-3] if symbol.endswith(".NS") else symbol
 
@@ -378,7 +391,7 @@ def render_customer_html(engine: PaperTradingEngine, config: Config) -> str:
         "@@CHANGE_PCT@@": f"{change_pct:+.1f}%",
         "@@STARTING_CAPITAL@@": _inr(starting_capital),
         "@@CHART_SVG@@": chart_svg,
-        "@@CHART_BADGE@@": _inr(equity),
+        "@@CHART_BADGE@@": _inr_abbrev(equity),
         "@@AVAILABLE_CASH@@": _inr(engine.broker.get_balance()),
         "@@INVESTED_AMOUNT@@": _inr(invested_amount),
         "@@TOTAL_PL@@": _signed_inr(total_gain_loss),
@@ -436,12 +449,14 @@ _PAGE_TEMPLATE = """<!doctype html>
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -8px rgba(0,0,0,0.5);
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: "Manrope", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
   }
   .tabular { font-variant-numeric: tabular-nums; }
   a { color: inherit; }
+  section[id], .wrap { scroll-margin-top: 14px; }
   .wrap { max-width: 620px; margin: 0 auto; padding: 16px 16px 90px; }
 
   /* Header */
@@ -525,6 +540,7 @@ _PAGE_TEMPLATE = """<!doctype html>
   .section-head .count-badge { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px;
     padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--ink-soft); }
   .section-head .view-all { font-size: 12px; font-weight: 700; color: var(--brand); text-decoration: none; }
+  .section-head-right { display: flex; align-items: center; gap: 10px; }
   section.block { margin-bottom: 22px; }
 
   /* Empty/sample */
@@ -641,7 +657,7 @@ _PAGE_TEMPLATE = """<!doctype html>
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="top">
   <header class="app-header">
     <div class="brand">
       <div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -656,14 +672,17 @@ _PAGE_TEMPLATE = """<!doctype html>
     </div>
   </header>
 
-  <section class="status-hero">
+  <section class="status-hero" id="bot-status">
     <div class="bot-avatar">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="14" y="18" width="36" height="30" rx="10" fill="#173A30" stroke="#34D399" stroke-width="2"/>
-        <circle cx="25" cy="33" r="4" fill="#34D399"/>
-        <circle cx="39" cy="33" r="4" fill="#34D399"/>
-        <path d="M25 41 Q32 46 39 41" stroke="#34D399" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <line x1="32" y1="18" x2="32" y2="10" stroke="#34D399" stroke-width="2.2" stroke-linecap="round"/>
+        <ellipse cx="32" cy="58" rx="14" ry="3" fill="#000" opacity="0.25"/>
+        <path d="M46 34 L54 27" stroke="#34D399" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="55" cy="25" r="3.2" fill="#F1F5F3"/>
+        <rect x="12" y="20" width="40" height="32" rx="14" fill="#EFFBF5" stroke="#34D399" stroke-width="2"/>
+        <circle cx="24" cy="35" r="4.2" fill="#0F2E22"/>
+        <circle cx="40" cy="35" r="4.2" fill="#0F2E22"/>
+        <path d="M24 44 Q32 50 40 44" stroke="#0F2E22" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <line x1="32" y1="20" x2="32" y2="11" stroke="#34D399" stroke-width="2.2" stroke-linecap="round"/>
         <circle cx="32" cy="7" r="3" fill="#34D399"/>
       </svg>
     </div>
@@ -715,13 +734,19 @@ _PAGE_TEMPLATE = """<!doctype html>
   <section class="block" id="stocks">
     <div class="section-head">
       <h2>&#128230; Your Stocks</h2>
-      <span class="count-badge">@@STOCK_COUNT@@ @@STOCK_WORD@@</span>
+      <div class="section-head-right">
+        <span class="count-badge">@@STOCK_COUNT@@ @@STOCK_WORD@@</span>
+        <a class="view-all" href="#stocks">View all &rarr;</a>
+      </div>
     </div>
     @@HOLDINGS_SECTION@@
   </section>
 
   <section class="block" id="activity">
-    <div class="section-head"><h2>&#128337; What Your Bot Did</h2></div>
+    <div class="section-head">
+      <h2>&#128337; What Your Bot Did</h2>
+      <a class="view-all" href="#activity">View all activity &rarr;</a>
+    </div>
     @@ACTIVITY_SECTION@@
   </section>
 
@@ -748,10 +773,10 @@ _PAGE_TEMPLATE = """<!doctype html>
 </div>
 
 <nav class="tabbar">
-  <a href="#" class="active"><span class="tab-icon">&#127968;</span>Home</a>
+  <a href="#top" class="active"><span class="tab-icon">&#127968;</span>Home</a>
   <a href="#results"><span class="tab-icon">&#128200;</span>Results</a>
   <a href="#stocks"><span class="tab-icon">&#128188;</span>Stocks</a>
-  <a href="#activity"><span class="tab-icon">&#129302;</span>Bot</a>
+  <a href="#bot-status"><span class="tab-icon">&#129302;</span>Bot</a>
   <a href="#trust"><span class="tab-icon">&#9881;&#65039;</span>Settings</a>
 </nav>
 </body>

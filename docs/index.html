@@ -17,12 +17,14 @@
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -8px rgba(0,0,0,0.5);
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: "Manrope", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
   }
   .tabular { font-variant-numeric: tabular-nums; }
   a { color: inherit; }
+  section[id], .wrap { scroll-margin-top: 14px; }
   .wrap { max-width: 620px; margin: 0 auto; padding: 16px 16px 90px; }
 
   /* Header */
@@ -106,6 +108,7 @@
   .section-head .count-badge { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px;
     padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--ink-soft); }
   .section-head .view-all { font-size: 12px; font-weight: 700; color: var(--brand); text-decoration: none; }
+  .section-head-right { display: flex; align-items: center; gap: 10px; }
   section.block { margin-bottom: 22px; }
 
   /* Empty/sample */
@@ -222,7 +225,7 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="top">
   <header class="app-header">
     <div class="brand">
       <div class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V13M10 19V9M16 19V5M22 19H2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -237,14 +240,17 @@
     </div>
   </header>
 
-  <section class="status-hero">
+  <section class="status-hero" id="bot-status">
     <div class="bot-avatar">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="14" y="18" width="36" height="30" rx="10" fill="#173A30" stroke="#34D399" stroke-width="2"/>
-        <circle cx="25" cy="33" r="4" fill="#34D399"/>
-        <circle cx="39" cy="33" r="4" fill="#34D399"/>
-        <path d="M25 41 Q32 46 39 41" stroke="#34D399" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <line x1="32" y1="18" x2="32" y2="10" stroke="#34D399" stroke-width="2.2" stroke-linecap="round"/>
+        <ellipse cx="32" cy="58" rx="14" ry="3" fill="#000" opacity="0.25"/>
+        <path d="M46 34 L54 27" stroke="#34D399" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="55" cy="25" r="3.2" fill="#F1F5F3"/>
+        <rect x="12" y="20" width="40" height="32" rx="14" fill="#EFFBF5" stroke="#34D399" stroke-width="2"/>
+        <circle cx="24" cy="35" r="4.2" fill="#0F2E22"/>
+        <circle cx="40" cy="35" r="4.2" fill="#0F2E22"/>
+        <path d="M24 44 Q32 50 40 44" stroke="#0F2E22" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <line x1="32" y1="20" x2="32" y2="11" stroke="#34D399" stroke-width="2.2" stroke-linecap="round"/>
         <circle cx="32" cy="7" r="3" fill="#34D399"/>
       </svg>
     </div>
@@ -269,7 +275,7 @@
     </div>
     <div class="pf-body">
       <div class="pf-chart-wrap">
-        <span class="pf-chart-badge tabular">&#8377;10,07,518</span>
+        <span class="pf-chart-badge tabular">&#8377;10.08L</span>
         <svg viewBox="0 0 400 180" width="100%" height="140" role="img" aria-label="Portfolio value from start to now"><line x1="0" y1="90" x2="400" y2="90" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line><path d="M10,150.0 L390,40.0 L390,180 L10,180 Z" fill="var(--profit)" opacity="0.10"></path><path d="M10,150.0 L390,40.0" fill="none" stroke="var(--profit)" stroke-width="3" stroke-linecap="round"></path><circle cx="390" cy="40.0" r="6" fill="var(--profit)"></circle></svg>
         <div class="pf-chart-labels"><span>Start</span><span>Now</span></div>
       </div>
@@ -296,13 +302,19 @@
   <section class="block" id="stocks">
     <div class="section-head">
       <h2>&#128230; Your Stocks</h2>
-      <span class="count-badge">1 stock</span>
+      <div class="section-head-right">
+        <span class="count-badge">1 stock</span>
+        <a class="view-all" href="#stocks">View all &rarr;</a>
+      </div>
     </div>
     <div class="real-block"><div class="holding-card"><div class="holding-top"><div class="stock-avatar">PRS</div><div class="holding-name"><p class="h-symbol">PRSMJOHNSN</p><p class="h-company">Prism Johnson Limited</p></div><span class="holding-tag">Holding</span></div><div class="holding-grid"><div><p class="hg-label">Shares</p><p class="hg-value tabular">1547</p></div><div><p class="hg-label">Bought at</p><p class="hg-value tabular">&#8377;112</p></div><div><p class="hg-label">Current value</p><p class="hg-value tabular">&#8377;1,81,076</p></div><div><p class="hg-label">Profit / Loss</p><p class="hg-value profit tabular">+&#8377;7,691 (+4.4%)</p></div></div><div class="why-holding"><span class="why-icon">&#128200;</span><div><p class="why-title">Why is the bot holding this?</p><p class="why-body">The bot expects this stock may continue rising.</p></div></div><div class="exit-plan"><div class="exit-card stop"><div class="exit-icon">&#128737;</div><div><p class="exit-label">Safety price</p><p class="exit-value tabular">&#8377;107</p><p class="exit-caption">If the price falls to this level, the bot will sell to limit the loss.</p></div></div><div class="exit-card target"><div class="exit-icon">&#127919;</div><div><p class="exit-label">Profit target</p><p class="exit-value tabular">&#8377;127</p><p class="exit-caption">If the price reaches this level, the bot may sell and take profit.</p></div></div></div></div></div>
   </section>
 
   <section class="block" id="activity">
-    <div class="section-head"><h2>&#128337; What Your Bot Did</h2></div>
+    <div class="section-head">
+      <h2>&#128337; What Your Bot Did</h2>
+      <a class="view-all" href="#activity">View all activity &rarr;</a>
+    </div>
     <div class="real-block"><div class="activity-row"><div class="date-badge"><span class="dn">15</span><span class="dm">SEP</span></div><div class="activity-badge buy">B</div><div class="activity-main"><p class="a-title">Bought PRSMJOHNSN</p><p class="a-sub">4 days ago, 7:03 PM</p></div><div class="activity-right"><p class="a-qty tabular">1547 shares</p><p class="a-price tabular">at &#8377;112 each</p><span class="status-pill open">Still holding</span></div></div></div>
   </section>
 
@@ -325,14 +337,14 @@
     <div class="row"><span class="check">&#10003;</span><span><strong>Never forced.</strong> Your bot only trades when confident, and skips days when nothing looks safe.</span></div>
     <div class="row"><span class="check">&#10003;</span><span><strong>Not advice.</strong> Past results, practice or real, never guarantee future ones.</span></div>
   </div>
-  <p style="text-align:center;font-size:10.5px;color:var(--ink-faint);margin:0 0 8px;">Updated Sat, 19 Sep &middot; 11:59 AM IST</p>
+  <p style="text-align:center;font-size:10.5px;color:var(--ink-faint);margin:0 0 8px;">Updated Sat, 19 Sep &middot; 12:12 PM IST</p>
 </div>
 
 <nav class="tabbar">
-  <a href="#" class="active"><span class="tab-icon">&#127968;</span>Home</a>
+  <a href="#top" class="active"><span class="tab-icon">&#127968;</span>Home</a>
   <a href="#results"><span class="tab-icon">&#128200;</span>Results</a>
   <a href="#stocks"><span class="tab-icon">&#128188;</span>Stocks</a>
-  <a href="#activity"><span class="tab-icon">&#129302;</span>Bot</a>
+  <a href="#bot-status"><span class="tab-icon">&#129302;</span>Bot</a>
   <a href="#trust"><span class="tab-icon">&#9881;&#65039;</span>Settings</a>
 </nav>
 </body>
