@@ -301,3 +301,32 @@ def test_news_score_unchanged_by_event_and_taxonomy_additions():
         base = 50.0 + (base - 50.0) * 0.25
     expected = 50.0 + (base - 50.0) * (agg.overall_confidence / 100.0)
     assert agg.news_score() == pytest.approx(expected)
+
+
+# =============================================================================
+# Regression: Indian financial-press domains added after auditing real
+# decision_log.csv data (see DEFAULT_CREDIBILITY_MAP's docstring note) --
+# must clear the default 0.4 credibility bar; a genuinely unlisted domain
+# must still fall through to "unknown" and fail it, same as before.
+# =============================================================================
+
+def test_indian_financial_press_domains_clear_the_credibility_bar():
+    from news.news_analysis import DEFAULT_CREDIBILITY_MAP
+
+    for domain in [
+        "business-standard.com", "financialexpress.com", "thehindubusinessline.com",
+        "cnbctv18.com", "ndtvprofit.com", "businesstoday.in", "timesofindia.indiatimes.com",
+    ]:
+        assert DEFAULT_CREDIBILITY_MAP[domain] >= 0.4, f"{domain} must clear the default credibility threshold"
+
+    items = [make_item("Great earnings beat for the company", "business-standard.com", 1)]
+    analyzer = NewsAnalyzer(source=FakeSource(items), sentiment_fn=fake_sentiment, min_source_credibility=0.4)
+    agg = analyzer.analyze("ACME")
+    assert agg.num_credible_sources == 1
+
+
+def test_a_genuinely_unlisted_domain_still_fails_credibility():
+    items = [make_item("Great earnings beat for the company", "some-random-blog.example", 1)]
+    analyzer = NewsAnalyzer(source=FakeSource(items), sentiment_fn=fake_sentiment, min_source_credibility=0.4)
+    agg = analyzer.analyze("ACME")
+    assert agg.num_credible_sources == 0

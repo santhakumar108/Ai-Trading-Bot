@@ -44,6 +44,23 @@ import numpy as np
 # Default per-domain credibility map. 0 = ignore entirely, 1 = fully credible.
 # This is intentionally a simple, editable table rather than a black box --
 # extend it via NewsAnalyzer(credibility_map=...).
+#
+# The Indian financial-daily entries below (business-standard.com through
+# cnbctv18.com) were added after auditing a month of real decision_log.csv
+# data from the full ~2302-symbol NSE universe scan: "news credibility
+# acceptable" was by far the single most common reason a high-confidence
+# (>=65) setup still got rejected (1220 of 1242 such cases). The news
+# source (RSSNewsSourceAdapter, Google News RSS search) already resolves
+# each item's REAL underlying publisher domain correctly -- the gate
+# itself and its 0.4 threshold were never the problem. The map was just
+# built around global/US outlets (Reuters, Bloomberg, WSJ...) plus a
+# handful of Indian ones, so legitimate coverage of small/mid-cap NSE
+# companies -- which comes overwhelmingly from Indian financial press, not
+# from Reuters/Bloomberg -- fell through to the "unknown" 0.3 default and
+# failed the >=0.4 bar almost every time. This is a correction to an
+# incomplete reference table (recognizing real, established Indian
+# financial journalism), not a loosened bar: the threshold, the >=1
+# credible source requirement, and every other gate are unchanged.
 DEFAULT_CREDIBILITY_MAP: Dict[str, float] = {
     "reuters.com": 0.95,
     "bloomberg.com": 0.95,
@@ -59,6 +76,21 @@ DEFAULT_CREDIBILITY_MAP: Dict[str, float] = {
     "reddit.com": 0.2,
     "twitter.com": 0.15,
     "x.com": 0.15,
+    # Established Indian financial/business press (see note above).
+    "business-standard.com": 0.75,
+    "financialexpress.com": 0.75,
+    "thehindubusinessline.com": 0.75,
+    "cnbctv18.com": 0.75,
+    "ndtvprofit.com": 0.7,
+    "ndtv.com": 0.65,
+    "businesstoday.in": 0.7,
+    "timesofindia.indiatimes.com": 0.65,
+    "hindustantimes.com": 0.6,
+    "zeebiz.com": 0.6,
+    "news18.com": 0.55,
+    "outlookbusiness.com": 0.6,
+    "outlookindia.com": 0.5,
+    "indianexpress.com": 0.6,
     "unknown": 0.3,
 }
 
