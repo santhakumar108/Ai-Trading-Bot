@@ -18,6 +18,19 @@ on:
     - cron: "30 12 * * 1-5"
   workflow_dispatch: {}  # allows a manual "Run workflow" click for testing
 
+# Without this, two triggers close together (GitHub's scheduler delaying
+# one into overlapping with the next) can both pass the "already ran
+# today" check, both fully regenerate docs/index.html with different
+# content, and then race to push -- the loser's rebase hits a genuine
+# file-level conflict (not just "behind", an actual unresolvable diff),
+# which the retry loop below cannot fix by retrying. `cancel-in-progress:
+# false` makes a second trigger WAIT for the first to finish instead of
+# running alongside it, so by the time it starts, "already ran today" is
+# true and it skips in seconds -- the race can no longer happen.
+concurrency:
+  group: daily-paper-trade
+  cancel-in-progress: false
+
 permissions:
   contents: write  # needed to commit the updated logs/ back to the repo
 
@@ -74,15 +87,22 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Daily paper-trade run: $(TZ='Asia/Kolkata' date '+%Y-%m-%d')"
           # This run can take hours; the remote may have moved (a manual
-          # push, or an overlapping run) since checkout -- rebase onto
-          # the latest main before pushing, retrying once, so a real
-          # day's results are never silently lost to a push rejection.
-          for attempt in 1 2 3; do
+          # push, or -- belt-and-suspenders alongside the concurrency
+          # lock above -- an overlapping run) since checkout. Rebase onto
+          # the latest main before pushing, retrying a few times. If the
+          # rebase itself hits a genuine conflict (not just "behind"),
+          # abort it cleanly rather than leaving the working tree stuck
+          # mid-rebase, which would make every subsequent retry fail too.
+          for attempt in 1 2 3 4 5; do
             if git push; then
               exit 0
             fi
             echo "Push rejected (attempt $attempt) -- pulling and retrying."
-            git pull --rebase origin main
+            if ! git pull --rebase origin main; then
+              echo "Rebase hit a conflict -- aborting it and retrying fresh."
+              git rebase --abort || true
+              sleep 10
+            fi
           done
-          echo "::error::Failed to push after 3 attempts."
+          echo "::error::Failed to push after 5 attempts."
           exit 1
